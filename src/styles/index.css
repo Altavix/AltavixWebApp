@@ -1,0 +1,79 @@
+:root {
+  --text: #6b6375;
+  --text-h: #08060d;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #aa3bff;
+  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-border: rgba(170, 59, 255, 0.5);
+  --social-bg: rgba(244, 243, 236, 0.5);
+  /* Brand colors based on the logo */
+  --color-primary: #4A1525; /* Dark burgundy */
+  --color-primary-light: #6A2135;
+  --color-primary-dark: #320d18;
+  
+  --color-bg-light: #F8F9FA; /* Light background for the whole page */
+  --color-bg-white: #FFFFFF; /* White for cards */
+  
+  --color-text-main: #333333;
+  --color-text-muted: #666666;
+  --color-text-inverse: #FFFFFF;
+  
+  --border-radius: 8px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background-color: var(--color-bg-light);
+  color: var(--color-text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 4%; /* Responsive padding */
+  width: 100%;
+}
+
+/* Media Queries for better responsiveness on very large screens if needed, 
+   but user requested full width, so we keep max-width 100% */
+@media (min-width: 1600px) {
+  .container {
+    padding: 0 8%;
+  }
+}
+
+
+h1 {
+  color: var(--color-primary-light);
+  margin-bottom: 1rem;
+}
+
+
