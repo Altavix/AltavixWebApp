@@ -6,9 +6,10 @@ interface ProductCardProps {
   product: ProductVm;
   isAdmin?: boolean;
   onDelete?: (id: string) => void;
+  onEdit?: (id: string) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, isAdmin = false, onDelete }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, isAdmin = false, onDelete, onEdit }) => {
   // Use the first image or a placeholder
   const imageUrl = product.images && product.images.length > 0 
     ? product.images[0] 
@@ -17,13 +18,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, isAdmin = false, onD
   const priceDisplay = `${product.price}.${product.priceCoin.toString().padStart(2, '0')} \u20B4`;
 
   const handleDelete = () => {
-    if (onDelete && window.confirm('Ви впевнені, що хочете видалити цей товар?')) {
-      onDelete(product.id);
-    }
+    if (onDelete) onDelete(product.id);
   };
 
   const handleEdit = () => {
-    alert('Редагування в розробці!');
+    if (onEdit) onEdit(product.id);
   };
 
   return (

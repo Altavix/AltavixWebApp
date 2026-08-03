@@ -40,4 +40,14 @@ export default class ProductService {
     const response = await $api.delete<ApiResponseDto<any>>(`/${id}`);
     return response;
   }
+
+  static async createProduct(data: any) {
+    const response = await $api.post<ApiResponseDto<string>>('', data);
+    return response;
+  }
+
+  static async updateProduct(data: any) {
+    const response = await $api.put<ApiResponseDto<any>>('', data);
+    return response;
+  }
 }

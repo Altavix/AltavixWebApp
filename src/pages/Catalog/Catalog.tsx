@@ -6,6 +6,9 @@ import { AuthContext } from '../../context/AuthContext';
 import ProductCard from '../../components/UI/ProductCard/ProductCard';
 import Pagination from '../../components/UI/Pagination/Pagination';
 import Loader from '../../components/UI/Loader';
+import ConfirmModal from '../../components/UI/Modal/ConfirmModal';
+import FormModal from '../../components/UI/Modal/FormModal';
+import ProductForm, { ProductFormData } from '../../components/Admin/ProductForm';
 import '../../styles/pages/Catalog.css';
 
 const Catalog: React.FC = () => {
@@ -15,6 +18,13 @@ const Catalog: React.FC = () => {
   const isAdmin = auth?.isAuth && auth?.user?.role === 'Admin';
   
   const [productsData, setProductsData] = useState<PaginatedList<ProductVm> | null>(null);
+
+  // Modal states
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [productToEdit, setProductToEdit] = useState<ProductVm | null>(null);
 
   const [fetchProducts, isLoading] = useFetching(async (p: number, size: number) => {
     return isAdmin 
@@ -31,19 +41,55 @@ const Catalog: React.FC = () => {
 
   useEffect(() => {
     loadProducts();
-    // Scroll to top on page change
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [page, isAdmin]);
 
-  const handleDelete = async (id: string) => {
-    const response = await ProductService.deleteProduct(id);
-    if (response && response.data?.messageType !== 'error') {
-      loadProducts();
+  const handleDeleteRequest = (id: string) => {
+    setProductToDelete(id);
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (productToDelete) {
+      const response = await ProductService.deleteProduct(productToDelete);
+      if (response && response.data?.messageType !== 'error') {
+        loadProducts();
+      }
+    }
+  };
+
+  const handleEditRequest = async (id: string) => {
+    // We should ideally fetch the full product by ID if it's missing data. 
+    // But since the list has all fields, we can just find it from productsData.
+    const product = productsData?.items.find(p => p.id === id);
+    if (product) {
+      setProductToEdit(product);
+      setIsFormOpen(true);
     }
   };
 
   const handleCreateProduct = () => {
-    alert('Створення нового товару в розробці!');
+    setProductToEdit(null);
+    setIsFormOpen(true);
+  };
+
+  const [submitForm, isSubmitting] = useFetching(async (data: ProductFormData) => {
+    if (productToEdit) {
+      // Update
+      const updateData = { id: productToEdit.id, ...data };
+      await ProductService.updateProduct(updateData);
+    } else {
+      // Create
+      await ProductService.createProduct(data);
+    }
+  });
+
+  const handleFormSubmit = async (data: ProductFormData) => {
+    const response = await submitForm(data);
+    if (response && response.messageType !== 'error') {
+      setIsFormOpen(false);
+      loadProducts(); // Refresh list
+    }
   };
 
   return (
@@ -88,7 +134,8 @@ const Catalog: React.FC = () => {
                       key={product.id} 
                       product={product} 
                       isAdmin={isAdmin}
-                      onDelete={handleDelete}
+                      onDelete={handleDeleteRequest}
+                      onEdit={handleEditRequest}
                     />
                   ))}
                 </div>
@@ -109,6 +156,42 @@ const Catalog: React.FC = () => {
           </>
         )}
       </div>
+
+      <ConfirmModal 
+        isOpen={isConfirmOpen} 
+        onClose={() => setIsConfirmOpen(false)}
+        title="Підтвердження видалення"
+        message="Ви впевнені, що хочете видалити цей товар? Цю дію неможливо скасувати."
+        onConfirm={handleConfirmDelete}
+        isDestructive={true}
+      />
+
+      {isFormOpen && (
+        <FormModal 
+          isOpen={isFormOpen}
+          onClose={() => setIsFormOpen(false)}
+          title={productToEdit ? 'Редагувати товар' : 'Створити новий товар'}
+          buttons={[
+            {
+              label: 'Скасувати',
+              onClick: () => setIsFormOpen(false),
+              variant: 'secondary'
+            },
+            {
+              label: 'Застосувати',
+              type: 'submit',
+              formId: 'product-form',
+              variant: 'primary',
+              isLoading: isSubmitting
+            }
+          ]}
+        >
+          <ProductForm 
+            initialData={productToEdit} 
+            onSubmit={handleFormSubmit} 
+          />
+        </FormModal>
+      )}
     </div>
   );
 };
