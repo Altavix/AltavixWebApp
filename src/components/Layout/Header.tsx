@@ -20,7 +20,7 @@ const Header: React.FC = () => {
           <ul>
             <li><Link to="/" className="active">Головна</Link></li>
             <li><a href="#">Про нас</a></li>
-            <li><a href="#">Каталог</a></li>
+            <li><Link to="/catalog">Каталог</Link></li>
             <li><a href="#">Контакти</a></li>
           </ul>
         </nav>
