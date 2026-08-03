@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import type { AuthResponseDto } from '../../types/auth';
 import Input from '../../components/UI/Input';
 import Button from '../../components/UI/Button';
 import { useAuth } from '../../hooks/useAuth';
@@ -34,8 +35,7 @@ const Register: React.FC = () => {
       return;
     }
 
-    await AuthService.register(name, email, password, surname, middleName, phone);
-    return await AuthService.login(email, password);
+    return await AuthService.register(name, email, password, surname, middleName, phone);
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,10 +43,9 @@ const Register: React.FC = () => {
     
     if (!result) return;
     
-    if (result.messageType === 'success' && result.data) {
-      login(result.data, result.data.token);
-      showToast('Реєстрація успішна!', 'success');
-      navigate('/');
+    if (result.messageType === 'success') {
+      showToast('Реєстрація успішна! Тепер ви можете увійти', 'success');
+      navigate('/login');
     }
   };
 

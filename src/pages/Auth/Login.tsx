@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import type { AuthResponseDto } from '../../types/auth';
 import Input from '../../components/UI/Input';
 import Button from '../../components/UI/Button';
 import { useAuth } from '../../hooks/useAuth';
@@ -16,7 +17,7 @@ const Login: React.FC = () => {
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  const [loginAction, isLoading] = useFetching(async (e: React.FormEvent) => {
+  const [loginAction, isLoading] = useFetching<AuthResponseDto>(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
       showToast('Будь ласка, заповніть всі поля', 'info');

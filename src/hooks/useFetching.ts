@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useToast } from './useToast';
 import type { ApiResponseDto } from '../types/api';
 
-export const useFetching = <T,>(callback: (...args: any[]) => Promise<any>) => {
+export const useFetching = <T>(callback: (...args: any[]) => Promise<any>) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { showToast } = useToast();
 

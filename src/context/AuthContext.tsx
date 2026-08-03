@@ -1,11 +1,6 @@
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
 
-interface User {
-  id: string;
-  email: string;
-  name?: string;
-  role?: string;
-}
+import type { User } from '../types/auth';
 
 interface AuthContextType {
   isAuth: boolean;
