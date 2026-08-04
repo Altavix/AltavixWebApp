@@ -1,8 +1,9 @@
 import axios from 'axios';
-import { CategoriesListVm } from '../types/category';
-import { ApiResponseDto } from '../types/api';
+import type { CategoriesListVm } from '../types/category';
+import type { ApiResponseDto } from '../types/api';
+import { API_ENDPOINTS } from '../config/api';
 
-const API_URL = 'http://localhost:5052/api/Category';
+const API_URL = API_ENDPOINTS.CATEGORY;
 
 const $api = axios.create({
   baseURL: API_URL

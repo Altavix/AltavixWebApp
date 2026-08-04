@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import ProductService from '../../services/ProductService';
-import { ProductVm, PaginatedList } from '../../types/product';
+import type { ProductVm, PaginatedList } from '../../types/product';
 import { useFetching } from '../../hooks/useFetching';
 import { AuthContext } from '../../context/AuthContext';
 import ProductCard from '../../components/UI/ProductCard/ProductCard';
@@ -8,7 +8,8 @@ import Pagination from '../../components/UI/Pagination/Pagination';
 import Loader from '../../components/UI/Loader';
 import ConfirmModal from '../../components/UI/Modal/ConfirmModal';
 import FormModal from '../../components/UI/Modal/FormModal';
-import ProductForm, { ProductFormData } from '../../components/Admin/ProductForm';
+import ProductForm from '../../components/Admin/ProductForm';
+import type { ProductFormData } from '../../components/Admin/ProductForm';
 import '../../styles/pages/Catalog.css';
 
 const Catalog: React.FC = () => {

@@ -1,7 +1,7 @@
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
-// Base URL для вашого бекенду (використовуємо http профіль, який у вас запущений)
-const API_URL = 'http://localhost:5052/api/Auth';
+const API_URL = API_ENDPOINTS.AUTH;
 
 export default class AuthService {
   static async login(email: string, password: string): Promise<any> {
@@ -22,6 +22,11 @@ export default class AuthService {
       password,
       confirmPassword: password // Відправляємо на бекенд підтвердження, оскільки ми перевіряємо його на фронті
     });
+    return response;
+  }
+
+  static async registerAdmin(data: any) {
+    const response = await axios.post(`${API_URL}/register-admin`, data);
     return response;
   }
 }

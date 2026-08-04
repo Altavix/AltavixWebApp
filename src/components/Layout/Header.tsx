@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import '../../styles/components/Layout/Header.css';
 
@@ -18,9 +18,9 @@ const Header: React.FC = () => {
         </div>
         <nav className="nav">
           <ul>
-            <li><Link to="/" className="active">Головна</Link></li>
+            <li><NavLink to="/" end>Головна</NavLink></li>
             <li><a href="#">Про нас</a></li>
-            <li><Link to="/catalog">Каталог</Link></li>
+            <li><NavLink to="/catalog">Каталог</NavLink></li>
             <li><a href="#">Контакти</a></li>
           </ul>
         </nav>

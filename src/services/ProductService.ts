@@ -1,8 +1,9 @@
 import axios from 'axios';
-import { PaginatedList, ProductVm } from '../types/product';
-import { ApiResponseDto } from '../types/api';
+import type { PaginatedList, ProductVm } from '../types/product';
+import type { ApiResponseDto } from '../types/api';
+import { API_ENDPOINTS } from '../config/api';
 
-const API_URL = 'http://localhost:5052/api/Product';
+const API_URL = API_ENDPOINTS.PRODUCT;
 
 const $api = axios.create({
   baseURL: API_URL
