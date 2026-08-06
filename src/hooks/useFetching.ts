@@ -14,6 +14,9 @@ export const useFetching = <T>(callback: (...args: any[]) => Promise<any>) => {
       const backendData = response?.data;
       
       if (backendData && backendData.messageType) {
+        if (backendData.messageType === 'success' && backendData.message) {
+          showToast(backendData.message, 'success');
+        }
         return backendData as ApiResponseDto<T>;
       }
       

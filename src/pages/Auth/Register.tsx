@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import type { AuthResponseDto } from '../../types/auth';
 import Input from '../../components/UI/Input';
 import Button from '../../components/UI/Button';
-import { useAuth } from '../../hooks/useAuth';
 import { useFetching } from '../../hooks/useFetching';
 import { useToast } from '../../hooks/useToast';
 import AuthService from '../../services/AuthService';
@@ -18,7 +16,6 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   
-  const { login } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 

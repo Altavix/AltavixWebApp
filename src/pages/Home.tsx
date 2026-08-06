@@ -5,7 +5,6 @@ import '../styles/pages/Home.css';
 const Home: React.FC = () => {
   return (
     <div className="home-page">
-      {/* HERO SECTION */}
       <section className="hero-section">
         <div className="container hero-container">
           <div className="hero-content">

@@ -1,11 +1,12 @@
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 
 import type { User } from '../types/auth';
 
 interface AuthContextType {
   isAuth: boolean;
   user: User | null;
-  login: (userData: User, token: string) => void;
+  login: (userData: User) => void;
   logout: () => void;
   isLoading: boolean;
 }
@@ -18,11 +19,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Перевіряємо, чи є токен при завантаженні додатку
-    const token = localStorage.getItem('token');
+    // Only check if user data exists in localStorage
     const savedUser = localStorage.getItem('user');
     
-    if (token && savedUser) {
+    if (savedUser) {
       setIsAuth(true);
       setUser(JSON.parse(savedUser));
     }
@@ -30,35 +30,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsLoading(false);
   }, []);
 
-  const parseJwt = (token: string) => {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-      return JSON.parse(jsonPayload);
-    } catch(e) {
-      return null;
-    }
-  };
-
-  const login = (userData: User, token: string) => {
-    const payload = parseJwt(token);
-    const role = payload ? payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] : undefined;
-    const enhancedUser = { ...userData, role: role || userData.role };
-
+  const login = (userData: User) => {
     setIsAuth(true);
-    setUser(enhancedUser);
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(enhancedUser));
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
-  const logout = () => {
-    setIsAuth(false);
-    setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  const logout = async () => {
+    try {
+      const { default: AuthService } = await import('../services/AuthService');
+      await AuthService.logout();
+    } catch (e) {
+      console.error("Logout request failed", e);
+    } finally {
+      setIsAuth(false);
+      setUser(null);
+      localStorage.removeItem('user');
+    }
   };
 
   return (

@@ -20,7 +20,6 @@ const Catalog: React.FC = () => {
   
   const [productsData, setProductsData] = useState<PaginatedList<ProductVm> | null>(null);
 
-  // Modal states
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
   
@@ -60,8 +59,6 @@ const Catalog: React.FC = () => {
   };
 
   const handleEditRequest = async (id: string) => {
-    // We should ideally fetch the full product by ID if it's missing data. 
-    // But since the list has all fields, we can just find it from productsData.
     const product = productsData?.items.find(p => p.id === id);
     if (product) {
       setProductToEdit(product);
@@ -76,11 +73,9 @@ const Catalog: React.FC = () => {
 
   const [submitForm, isSubmitting] = useFetching(async (data: ProductFormData) => {
     if (productToEdit) {
-      // Update
       const updateData = { id: productToEdit.id, ...data };
       await ProductService.updateProduct(updateData);
     } else {
-      // Create
       await ProductService.createProduct(data);
     }
   });
@@ -161,7 +156,7 @@ const Catalog: React.FC = () => {
       <ConfirmModal 
         isOpen={isConfirmOpen} 
         onClose={() => setIsConfirmOpen(false)}
-        title="Підтвердження видалення"
+        title="Підтвердити видалення"
         message="Ви впевнені, що хочете видалити цей товар? Цю дію неможливо скасувати."
         onConfirm={handleConfirmDelete}
         isDestructive={true}
@@ -179,7 +174,7 @@ const Catalog: React.FC = () => {
               variant: 'secondary'
             },
             {
-              label: 'Застосувати',
+              label: 'Зберегти',
               type: 'submit',
               formId: 'product-form',
               variant: 'primary',

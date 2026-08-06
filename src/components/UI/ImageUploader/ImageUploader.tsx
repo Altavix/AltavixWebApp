@@ -11,7 +11,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, onImagesChange, o
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleContainerClick = (e: React.MouseEvent) => {
-    // Prevent opening file dialog if user clicked on the delete button or an image
     if ((e.target as HTMLElement).closest('.image-preview')) {
       return;
     }
@@ -126,7 +125,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, onImagesChange, o
               </button>
             </div>
           ))}
-          {/* Add more placeholder block */}
           <div className="add-more-placeholder">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

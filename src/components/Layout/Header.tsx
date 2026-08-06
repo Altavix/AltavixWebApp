@@ -10,7 +10,6 @@ const Header: React.FC = () => {
     <header className="header">
       <div className="header-content">
         <div className="logo">
-          {/* Placeholder for the logo user uploaded */}
           <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
             <span className="logo-placeholder">A</span>
             <span className="logo-text">ALTAVIX</span>

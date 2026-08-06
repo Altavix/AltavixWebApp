@@ -16,7 +16,6 @@ interface FormModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  onSubmit?: (e: React.FormEvent) => void;
   buttons?: ModalButtonConfig[];
 }
 
@@ -25,7 +24,6 @@ const FormModal: React.FC<FormModalProps> = ({
   onClose, 
   title, 
   children, 
-  onSubmit, 
   buttons = []
 }) => {
   const footer = (

@@ -4,6 +4,11 @@ import type { CategoryDto } from '../../types/category';
 import CategoryService from '../../services/CategoryService';
 import Input from '../UI/Input';
 import ImageUploader from '../UI/ImageUploader/ImageUploader';
+import FormModal from '../UI/Modal/FormModal';
+import CategoryForm from './CategoryForm';
+import type { CategoryFormData } from './CategoryForm';
+import { useFetching } from '../../hooks/useFetching';
+import MultiSelect from '../UI/Select/MultiSelect';
 import '../../styles/components/Admin/ProductForm.css';
 
 export interface ProductFormData {
@@ -29,7 +34,7 @@ const ensureBase64Prefix = (base64Str: string) => {
   return `data:image/jpeg;base64,${base64Str}`;
 };
 
-const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, isSubmitting = false }) => {
+const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
   const [title, setTitle] = useState(initialData?.title || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [price, setPrice] = useState(initialData?.price?.toString() || '');
@@ -42,31 +47,22 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, isSubm
   );
   
   const [categories, setCategories] = useState<CategoryDto[]>([]);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await CategoryService.getAll();
+      if (response?.data?.categories) {
+        setCategories(response.data.categories);
+      }
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await CategoryService.getAll();
-        if (response?.data?.categories) {
-          setCategories(response.data.categories);
-        }
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-      }
-    };
     fetchCategories();
   }, []);
-
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const options = e.target.options;
-    const selected: string[] = [];
-    for (let i = 0; i < options.length; i++) {
-      if (options[i].selected) {
-        selected.push(options[i].value);
-      }
-    }
-    setSelectedCategories(selected);
-  };
 
   const handleImagesChange = (newImagesBase64: string[]) => {
     setImages(prev => [...prev, ...newImagesBase64]);
@@ -86,6 +82,25 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, isSubm
       categoryIds: selectedCategories,
       images: images
     });
+  };
+
+  const [createCategory, isCreatingCategory] = useFetching(async (title: string) => {
+    return await CategoryService.create(title);
+  });
+
+  const handleCreateCategory = async (data: CategoryFormData) => {
+    const response = await createCategory(data.title);
+    
+    if (response && response.messageType !== 'error') {
+      await fetchCategories();
+      
+      const newId = response.data as unknown as string;
+      if (newId && typeof newId === 'string') {
+        setSelectedCategories(prev => [...prev, newId]);
+      }
+      
+      setIsCategoryModalOpen(false);
+    }
   };
 
   return (
@@ -131,17 +146,38 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, isSubm
         </div>
 
         <div className="input-group">
-          <label className="input-label">Категорії (затисніть Ctrl для вибору декількох)</label>
-          <select 
-            multiple 
-            className="input-field multi-select" 
-            value={selectedCategories} 
-            onChange={handleCategoryChange}
-          >
-            {categories.map(c => (
-              <option key={c.id} value={c.id}>{c.title}</option>
-            ))}
-          </select>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <label className="input-label" style={{ marginBottom: 0 }}>
+              Категорії
+            </label>
+            <button 
+              type="button" 
+              onClick={() => setIsCategoryModalOpen(true)}
+              style={{
+                background: 'var(--color-primary)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '50%',
+                width: '24px',
+                height: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '16px',
+                lineHeight: 1
+              }}
+              title="Створити нову категорію"
+            >
+              +
+            </button>
+          </div>
+          <MultiSelect
+            options={categories.map(c => ({ value: c.id, label: c.title }))}
+            selectedValues={selectedCategories}
+            onChange={setSelectedCategories}
+            placeholder="Виберіть категорії..."
+          />
         </div>
 
         <div className="input-group">
@@ -153,9 +189,24 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, isSubm
           />
         </div>
 
-        {/* Hidden submit button triggered by FormModal */}
-        <button type="submit" id="product-form-submit" style={{ display: 'none' }}></button>
+        <button type="submit" id="product-form" style={{ display: 'none' }}></button>
       </form>
+
+      <FormModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        title="Створити категорію"
+        buttons={[
+          {
+            label: "Створити",
+            type: "submit",
+            formId: "category-form",
+            isLoading: isCreatingCategory
+          }
+        ]}
+      >
+        <CategoryForm onSubmit={handleCreateCategory} />
+      </FormModal>
     </div>
   );
 };

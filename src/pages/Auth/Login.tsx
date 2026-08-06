@@ -33,7 +33,12 @@ const Login: React.FC = () => {
     if (!result) return;
     
     if (result.messageType === 'success' && result.data) {
-      login({ id: result.data.userId || '1', email: email, name: email }, result.data.token);
+      login({ 
+        id: result.data.userId || '1', 
+        email: email, 
+        name: email,
+        role: result.data.role
+      });
       showToast('Успішний вхід!', 'success');
       navigate('/');
     }
