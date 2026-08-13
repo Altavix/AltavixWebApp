@@ -14,16 +14,37 @@ export interface OrderItemVm {
     unitPriceCoin: number;
 }
 
-export const OrderService = {
-    async createCart(clientId?: string) {
-        return await $api.post(`/orders/cart`, { clientId });
-    },
+export interface DeliveryMethodVm {
+    id: string;
+    title: string;
+    description: string | null;
+    price: number;
+    type: number;
+    isActive: boolean;
+}
 
-    async checkout(orderId: string, checkoutData: any) {
-        return await $api.post(`/orders/checkout`, {
-            orderId,
-            ...checkoutData
-        });
+export interface PaymentMethodVm {
+    id: string;
+    title: string;
+    type: number;
+    isActive: boolean;
+}
+
+// Removed API_ENDPOINTS
+
+export const OrderService = {
+    createCart: async (clientId?: string) => {
+        const payload = clientId ? { clientId } : {};
+        return $api.post(`/orders/cart`, payload);
+    },
+    checkout: async (payload: any) => {
+        return $api.post(`/orders/checkout`, payload);
+    },
+    getDeliveryMethods: async () => {
+        return $api.get(`/deliverymethods/active`);
+    },
+    getPaymentMethods: async () => {
+        return $api.get(`/paymentmethods/active`);
     }
 };
 

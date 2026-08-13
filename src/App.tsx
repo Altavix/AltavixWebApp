@@ -6,6 +6,7 @@ import Register from './pages/Auth/Register'
 import RegisterAdmin from './pages/Auth/RegisterAdmin'
 import Catalog from './pages/Catalog/Catalog'
 import ProductPage from './pages/Product/ProductPage'
+import CheckoutPage from './pages/Checkout/CheckoutPage'
 import Toast from './components/UI/Toast'
 import './styles/index.css'
 
@@ -19,6 +20,7 @@ function App() {
         <Route path="/admin/register" element={<RegisterAdmin />} />
         <Route path="/catalog" element={<Catalog />} />
         <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
       </Routes>
       <Toast />
     </Layout>
@@ -26,4 +28,3 @@ function App() {
 }
 
 export default App
-
