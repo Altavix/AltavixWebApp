@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useCart } from '../../context/CartContext';
 import '../../styles/components/Layout/Header.css';
 
 const Header: React.FC = () => {
   const { isAuth, user, logout } = useAuth();
+  const { toggleCart, totalQuantity } = useCart();
 
   return (
     <header className="header">
@@ -25,6 +27,12 @@ const Header: React.FC = () => {
         </nav>
         <div className="header-actions">
           <button className="icon-btn">🔍</button>
+          
+          <button className="icon-btn cart-btn" title="Кошик" onClick={toggleCart}>
+            🛒
+            {totalQuantity > 0 && <span className="cart-badge">{totalQuantity}</span>}
+          </button>
+
           {isAuth ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{user?.name}</span>

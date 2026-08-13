@@ -9,4 +9,7 @@ export interface AuthResponseDto {
   userId: string;
   token: string;
   refreshToken: string;
+  role?: string;
+  firstName?: string;
+  lastName?: string;
 }

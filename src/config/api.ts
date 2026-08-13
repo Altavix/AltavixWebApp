@@ -33,7 +33,10 @@ $api.interceptors.response.use(
       } catch (refreshError) {
         // If refresh fails, user must log in again.
         console.error('Refresh token expired or invalid. Please login again.');
-        // We'll let the UI handle the actual redirect or we can dispatch an event
+        
+        // Remove stale user data and redirect
+        localStorage.removeItem('user');
+        window.location.href = '/login';
       }
     }
     
