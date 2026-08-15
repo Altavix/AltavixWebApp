@@ -6,7 +6,8 @@ import { OrderService } from "../../services/CartService";
 import type { DeliveryMethodVm, PaymentMethodVm } from "../../services/CartService";
 import { useFetching } from "../../hooks/useFetching";
 import OrderSummaryModal from "./components/OrderSummaryModal";
-import Select from "../../components/UI/Select/Select";
+import OrderFormFields from "../../components/Orders/OrderFormFields";
+import { formatDeliveryAddress } from "../../utils/orderUtils";
 import "./CheckoutPage.css";
 
 const CheckoutPage: React.FC = () => {
@@ -91,19 +92,7 @@ const CheckoutPage: React.FC = () => {
     const handleConfirmCheckout = async () => {
         if (!orderId) return;
 
-        let finalAddress = formData.address;
-        
-        // Format address prefix based on delivery method logic
-        if (selectedDelivery?.type === 2) { // NovaPoshta
-            const prefix = novaPoshtaType === "postomat" ? "Поштомат №" : "Відділення №";
-            if (!finalAddress.toLowerCase().includes("пошт") && !finalAddress.toLowerCase().includes("відділ")) {
-                finalAddress = `${prefix}${finalAddress}`;
-            }
-        } else if (selectedDelivery?.type === 5) { // Ukrposhta
-            if (!finalAddress.toLowerCase().includes("відділ") && !finalAddress.toLowerCase().includes("індекс")) {
-                finalAddress = `Відділення/Індекс: ${finalAddress}`;
-            }
-        }
+        const finalAddress = formatDeliveryAddress(formData.address, selectedDelivery, novaPoshtaType);
 
         const result = await fetchCheckout({
             orderId,
@@ -125,95 +114,17 @@ const CheckoutPage: React.FC = () => {
                 
                 <div className="checkout-layout">
                     <form className="checkout-form" onSubmit={handleOpenModal}>
-                        <section className="checkout-section">
-                            <h2>Контактні дані</h2>
-                            <div className="form-group">
-                                <label>ПІБ *</label>
-                                <input type="text" name="clientName" value={formData.clientName} onChange={handleInputChange} required />
-                            </div>
-                            <div className="form-group">
-                                <label>Телефон *</label>
-                                <input type="tel" name="clientMobilePhone" value={formData.clientMobilePhone} onChange={handleInputChange} required />
-                            </div>
-                            <div className="form-group">
-                                <label>Email</label>
-                                <input type="email" name="clientEmail" value={formData.clientEmail} onChange={handleInputChange} />
-                            </div>
-                        </section>
-
-                        <section className="checkout-section">
-                            <h2>Доставка</h2>
-                            <div className="form-group" style={{ position: "relative", zIndex: 10 }}>
-                                <Select 
-                                    label="Спосіб доставки *"
-                                    options={deliveryMethods.map(m => ({ 
-                                        value: m.id, 
-                                        label: `${m.title} ${m.price > 0 ? `(+${m.price.toFixed(2)} ₴)` : ""}` 
-                                    }))}
-                                    selectedValue={formData.deliveryMethodId}
-                                    onChange={(value) => handleSelectChange('deliveryMethodId', value)}
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Місто *</label>
-                                <input type="text" name="city" value={formData.city} onChange={handleInputChange} required />
-                            </div>
-
-                            {selectedDelivery?.type === 2 ? (
-                                <>
-                                    <div className="form-group" style={{ position: "relative", zIndex: 9 }}>
-                                        <Select 
-                                            label="Тип *"
-                                            options={[
-                                                { value: "branch", label: "На відділення" },
-                                                { value: "postomat", label: "На поштомат" }
-                                            ]}
-                                            selectedValue={novaPoshtaType}
-                                            onChange={(val) => setNovaPoshtaType(val as "branch" | "postomat")}
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>{novaPoshtaType === "branch" ? "Номер відділення *" : "Номер поштомату *"}</label>
-                                        <input type="text" name="address" value={formData.address} onChange={handleInputChange} required placeholder="наприклад, 42" />
-                                    </div>
-                                </>
-                            ) : selectedDelivery?.type === 5 ? (
-                                <div className="form-group">
-                                    <label>Номер відділення або індекс *</label>
-                                    <input type="text" name="address" value={formData.address} onChange={handleInputChange} required placeholder="наприклад, 01001" />
-                                </div>
-                            ) : (
-                                <div className="form-group">
-                                    <label>Адреса / Відділення *</label>
-                                    <input type="text" name="address" value={formData.address} onChange={handleInputChange} required />
-                                </div>
-                            )}
-                        </section>
-
-                        <section className="checkout-section">
-                            <h2>Оплата</h2>
-                            <div className="form-group" style={{ position: "relative", zIndex: 5 }}>
-                                <Select 
-                                    label="Спосіб оплати *"
-                                    options={paymentMethods.map(m => ({ 
-                                        value: m.id, 
-                                        label: m.title 
-                                    }))}
-                                    selectedValue={formData.paymentMethodId}
-                                    onChange={(value) => handleSelectChange('paymentMethodId', value)}
-                                />
-                            </div>
-                        </section>
-
-                        <section className="checkout-section">
-                            <h2>Коментар</h2>
-                            <div className="form-group">
-                                <textarea name="comment" value={formData.comment} onChange={handleInputChange} rows={3} placeholder="Додайте коментар до замовлення (необов'язково)"></textarea>
-                            </div>
-                        </section>
-
-                        <button type="submit" className="checkout-submit-btn">Замовити</button>
+                        <OrderFormFields
+                            formData={formData}
+                            deliveryMethods={deliveryMethods}
+                            paymentMethods={paymentMethods}
+                            novaPoshtaType={novaPoshtaType}
+                            setNovaPoshtaType={setNovaPoshtaType}
+                            onInputChange={handleInputChange}
+                            onSelectChange={handleSelectChange}
+                            showComment={true}
+                        />
+                        <button type="submit" className="checkout-submit-btn" style={{ marginTop: '2rem' }}>Замовити</button>
                     </form>
 
                     <aside className="checkout-sidebar">
@@ -260,11 +171,7 @@ const CheckoutPage: React.FC = () => {
                 paymentMethodTitle={selectedPayment?.title || ""}
                 formData={{
                     ...formData,
-                    address: selectedDelivery?.type === 2 
-                        ? (novaPoshtaType === "postomat" ? (formData.address.toLowerCase().includes("пошт") ? formData.address : `Поштомат №${formData.address}`) : (formData.address.toLowerCase().includes("відділ") ? formData.address : `Відділення №${formData.address}`))
-                        : selectedDelivery?.type === 5 
-                            ? (formData.address.toLowerCase().includes("відділ") || formData.address.toLowerCase().includes("індекс") ? formData.address : `Відділення/Індекс: ${formData.address}`)
-                            : formData.address
+                    address: formatDeliveryAddress(formData.address, selectedDelivery, novaPoshtaType)
                 }}
             />
         </div>

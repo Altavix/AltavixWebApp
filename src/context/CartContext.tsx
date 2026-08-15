@@ -43,6 +43,23 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     }, [orderId]);
 
+    useEffect(() => {
+        const syncUserCart = async () => {
+            if (user && !orderId) {
+                try {
+                    const result = await fetchCreateCart(user.id);
+                    if (result.messageType === 'success' && result.data) {
+                        setOrderId(result.data);
+                        localStorage.setItem('cartOrderId', result.data);
+                    }
+                } catch (e) {
+                    console.error("Failed to sync user cart", e);
+                }
+            }
+        };
+        syncUserCart();
+    }, [user, orderId]);
+
     const loadCartItems = async (id: string) => {
         const result = await fetchGetCartItems(id);
         if (result.messageType === 'success' && result.data) {

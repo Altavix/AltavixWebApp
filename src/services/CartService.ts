@@ -46,6 +46,12 @@ export const OrderService = {
     checkout: async (payload: any) => {
         return $api.post(`/orders/checkout`, payload);
     },
+    updateOrderDetails: async (id: string, payload: any) => {
+        return $api.put(`/orders/${id}`, payload);
+    },
+    cancelOrder: async (id: string) => {
+        return $api.post(`/orders/${id}/cancel`);
+    },
     getDeliveryMethods: async () => {
         return $api.get(`/deliverymethods/active`);
     },

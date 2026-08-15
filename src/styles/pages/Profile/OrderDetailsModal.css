@@ -1,0 +1,332 @@
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    animation: slideUp 0.3s ease-out;
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-color);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6b7280;
+    transition: color 0.2s;
+    line-height: 1;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.close-btn:hover {
+    color: var(--text-color);
+    background-color: #f3f4f6;
+}
+
+.modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.order-details-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.details-header h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.25rem;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.details-card {
+    background-color: #f9fafb;
+    border-radius: 8px;
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+}
+
+.details-card h4 {
+    margin: 0 0 1rem 0;
+    color: var(--text-color);
+    font-size: 1rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+}
+
+.details-card p {
+    margin: 0.5rem 0;
+    color: #4b5563;
+    font-size: 0.95rem;
+}
+
+.details-card strong {
+    color: var(--text-color);
+}
+
+.comment-card {
+    background-color: #fffbeb;
+    border-color: #fde68a;
+}
+
+.items-section h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+}
+
+.items-table-container {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.items-table th, .items-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.items-table th {
+    background-color: #f9fafb;
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.items-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+
+.details-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.total-price-box {
+    text-align: right;
+}
+
+.total-price-box span {
+    font-size: 0.9rem;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+
+.total-price-box h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+    .modal-content {
+        width: 100%;
+        height: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+}
+
+/* Edit Mode Styles */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-edit {
+    background: none;
+    border: 1px solid var(--border);
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.btn-edit:hover {
+    background-color: #f3f4f6;
+}
+
+.edit-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.edit-form-group label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+}
+
+.edit-form-group input,
+.edit-form-group select {
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.qty-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.qty-controls button {
+    background: #f3f4f6;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.qty-controls button:hover {
+    background: #e5e7eb;
+}
+
+.btn-remove-item {
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.btn-remove-item:hover {
+    opacity: 1;
+}
+
+.actions-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.actions-right {
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.edit-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-cancel-order {
+    background-color: #fee2e2;
+    color: #ef4444;
+    border: 1px solid #fca5a5;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-cancel-order:hover:not(:disabled) {
+    background-color: #fecaca;
+}
+
+.btn-cancel-order.disabled,
+.btn-cancel-order:disabled {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+}
+
+.cancel-notice {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.details-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}

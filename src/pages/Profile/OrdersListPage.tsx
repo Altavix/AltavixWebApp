@@ -3,6 +3,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { OrderService } from '../../services/CartService';
 import { useFetching } from '../../hooks/useFetching';
+import OrderDetailsModal from '../../components/Profile/OrderDetailsModal';
+import Loader from '../../components/UI/Loader';
 import '../../styles/pages/Profile/OrdersListPage.css';
 
 interface OrderSummary {
@@ -50,6 +52,7 @@ const OrdersListPage: React.FC = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [orders, setOrders] = useState<OrderSummary[]>([]);
+    const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
     
     const [fetchOrders, isLoading, error] = useFetching(async (clientId: string) => {
         const res = await OrderService.getOrdersList(clientId);
@@ -86,13 +89,13 @@ const OrdersListPage: React.FC = () => {
                 <h1>Мої замовлення</h1>
 
                 {isLoading ? (
-                    <div className="loader">Завантаження...</div>
+                    <Loader />
                 ) : error ? (
                     <div className="error-msg">{error}</div>
                 ) : (
                     <div className="orders-list">
                         {hasActiveCart && (
-                            <div className="order-row cart-row">
+                            <div className="order-row cart-row" onClick={() => setSelectedOrderId(cartOrder.id)} style={{ cursor: 'pointer' }}>
                                 <div className="order-col col-number">
                                     <span className="col-label">Замовлення</span>
                                     <strong>№{cartOrder.number}</strong>
@@ -116,7 +119,13 @@ const OrdersListPage: React.FC = () => {
                                     <strong>{cartOrder.totalPrice.toFixed(2)} ₴</strong>
                                 </div>
                                 <div className="order-col col-action">
-                                    <button className="orders-checkout-btn" onClick={() => navigate('/checkout')}>
+                                    <button 
+                                        className="orders-checkout-btn" 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate('/checkout');
+                                        }}
+                                    >
                                         Замовити
                                     </button>
                                 </div>
@@ -130,7 +139,12 @@ const OrdersListPage: React.FC = () => {
                             </div>
                         ) : (
                             pastOrders.map(order => (
-                                <div key={order.id} className="order-row">
+                                <div 
+                                    key={order.id} 
+                                    className="order-row" 
+                                    onClick={() => setSelectedOrderId(order.id)}
+                                    style={{ cursor: 'pointer' }}
+                                >
                                     <div className="order-col col-number">
                                         <span className="col-label">Замовлення</span>
                                         <strong>№{order.number}</strong>
@@ -161,6 +175,13 @@ const OrdersListPage: React.FC = () => {
                     </div>
                 )}
             </div>
+
+            {selectedOrderId && (
+                <OrderDetailsModal 
+                    orderId={selectedOrderId} 
+                    onClose={() => setSelectedOrderId(null)} 
+                />
+            )}
         </div>
     );
 };

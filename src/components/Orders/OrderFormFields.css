@@ -1,0 +1,79 @@
+.order-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.order-form-fields .form-section {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.order-form-fields .form-section h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+}
+
+.order-form-fields .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.order-form-fields .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.order-form-fields .form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.order-form-fields .form-group label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-light);
+}
+
+.order-form-fields .form-group input,
+.order-form-fields .form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.order-form-fields .form-group input:focus,
+.order-form-fields .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.order-form-fields .mt-3 {
+    margin-top: 1rem;
+}
+
+/* Z-index management for custom selects */
+.select-high-z { position: relative; z-index: 10; }
+.select-medium-z { position: relative; z-index: 9; }
+.select-low-z { position: relative; z-index: 5; }
+
+@media (max-width: 640px) {
+    .order-form-fields .form-section {
+        padding: 1rem;
+    }
+    
+    .order-form-fields .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
