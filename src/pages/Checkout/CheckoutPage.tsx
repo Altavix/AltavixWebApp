@@ -21,6 +21,8 @@ const CheckoutPage: React.FC = () => {
     const [deliveryMethods, setDeliveryMethods] = useState<DeliveryMethodVm[]>([]);
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethodVm[]>([]);
 
+    const [novaPoshtaType, setNovaPoshtaType] = useState<"branch" | "postomat">("branch");
+
     const [formData, setFormData] = useState({
         clientName: "",
         clientMobilePhone: "",
@@ -83,12 +85,30 @@ const CheckoutPage: React.FC = () => {
         setIsModalOpen(true);
     };
 
+    const selectedDelivery = deliveryMethods.find(m => m.id === formData.deliveryMethodId);
+    const selectedPayment = paymentMethods.find(m => m.id === formData.paymentMethodId);
+
     const handleConfirmCheckout = async () => {
         if (!orderId) return;
 
+        let finalAddress = formData.address;
+        
+        // Format address prefix based on delivery method logic
+        if (selectedDelivery?.type === 2) { // NovaPoshta
+            const prefix = novaPoshtaType === "postomat" ? "Поштомат №" : "Відділення №";
+            if (!finalAddress.toLowerCase().includes("пошт") && !finalAddress.toLowerCase().includes("відділ")) {
+                finalAddress = `${prefix}${finalAddress}`;
+            }
+        } else if (selectedDelivery?.type === 5) { // Ukrposhta
+            if (!finalAddress.toLowerCase().includes("відділ") && !finalAddress.toLowerCase().includes("індекс")) {
+                finalAddress = `Відділення/Індекс: ${finalAddress}`;
+            }
+        }
+
         const result = await fetchCheckout({
             orderId,
-            ...formData
+            ...formData,
+            address: finalAddress
         });
 
         if (result.messageType === "success") {
@@ -97,9 +117,6 @@ const CheckoutPage: React.FC = () => {
             navigate("/"); // Or success page
         }
     };
-
-    const selectedDelivery = deliveryMethods.find(m => m.id === formData.deliveryMethodId);
-    const selectedPayment = paymentMethods.find(m => m.id === formData.paymentMethodId);
 
     return (
         <div className="checkout-page">
@@ -126,14 +143,6 @@ const CheckoutPage: React.FC = () => {
 
                         <section className="checkout-section">
                             <h2>Доставка</h2>
-                            <div className="form-group">
-                                <label>Місто *</label>
-                                <input type="text" name="city" value={formData.city} onChange={handleInputChange} required />
-                            </div>
-                            <div className="form-group">
-                                <label>Адреса / Відділення *</label>
-                                <input type="text" name="address" value={formData.address} onChange={handleInputChange} required />
-                            </div>
                             <div className="form-group" style={{ position: "relative", zIndex: 10 }}>
                                 <Select 
                                     label="Спосіб доставки *"
@@ -145,6 +154,41 @@ const CheckoutPage: React.FC = () => {
                                     onChange={(value) => handleSelectChange('deliveryMethodId', value)}
                                 />
                             </div>
+
+                            <div className="form-group">
+                                <label>Місто *</label>
+                                <input type="text" name="city" value={formData.city} onChange={handleInputChange} required />
+                            </div>
+
+                            {selectedDelivery?.type === 2 ? (
+                                <>
+                                    <div className="form-group" style={{ position: "relative", zIndex: 9 }}>
+                                        <Select 
+                                            label="Тип *"
+                                            options={[
+                                                { value: "branch", label: "На відділення" },
+                                                { value: "postomat", label: "На поштомат" }
+                                            ]}
+                                            selectedValue={novaPoshtaType}
+                                            onChange={(val) => setNovaPoshtaType(val as "branch" | "postomat")}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>{novaPoshtaType === "branch" ? "Номер відділення *" : "Номер поштомату *"}</label>
+                                        <input type="text" name="address" value={formData.address} onChange={handleInputChange} required placeholder="наприклад, 42" />
+                                    </div>
+                                </>
+                            ) : selectedDelivery?.type === 5 ? (
+                                <div className="form-group">
+                                    <label>Номер відділення або індекс *</label>
+                                    <input type="text" name="address" value={formData.address} onChange={handleInputChange} required placeholder="наприклад, 01001" />
+                                </div>
+                            ) : (
+                                <div className="form-group">
+                                    <label>Адреса / Відділення *</label>
+                                    <input type="text" name="address" value={formData.address} onChange={handleInputChange} required />
+                                </div>
+                            )}
                         </section>
 
                         <section className="checkout-section">
@@ -213,7 +257,14 @@ const CheckoutPage: React.FC = () => {
                 deliveryPrice={selectedDelivery?.price || 0}
                 deliveryMethodTitle={selectedDelivery?.title || ""}
                 paymentMethodTitle={selectedPayment?.title || ""}
-                formData={formData}
+                formData={{
+                    ...formData,
+                    address: selectedDelivery?.type === 2 
+                        ? (novaPoshtaType === "postomat" ? `Поштомат №${formData.address}` : `Відділення №${formData.address}`)
+                        : selectedDelivery?.type === 5 
+                            ? `Відділення/Індекс: ${formData.address}` 
+                            : formData.address
+                }}
             />
         </div>
     );
