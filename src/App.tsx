@@ -7,6 +7,8 @@ import RegisterAdmin from './pages/Auth/RegisterAdmin'
 import Catalog from './pages/Catalog/Catalog'
 import ProductPage from './pages/Product/ProductPage'
 import CheckoutPage from './pages/Checkout/CheckoutPage'
+import ProfilePage from './pages/Profile/ProfilePage'
+import OrdersListPage from './pages/Profile/OrdersListPage'
 import Toast from './components/UI/Toast'
 import './styles/index.css'
 
@@ -21,6 +23,8 @@ function App() {
         <Route path="/catalog" element={<Catalog />} />
         <Route path="/product/:id" element={<ProductPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/my-orders" element={<OrdersListPage />} />
       </Routes>
       <Toast />
     </Layout>

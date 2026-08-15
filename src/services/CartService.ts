@@ -36,6 +36,9 @@ export const OrderService = {
     getOrderById: async (id: string) => {
         return $api.get(`/orders/${id}`);
     },
+    getOrdersList: async (clientId: string, page = 1, pageSize = 50) => {
+        return $api.get(`/orders?clientId=${clientId}&page=${page}&pageSize=${pageSize}`);
+    },
     createCart: async (clientId?: string) => {
         const payload = clientId ? { clientId } : {};
         return $api.post(`/orders/cart`, payload);
