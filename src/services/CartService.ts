@@ -33,6 +33,9 @@ export interface PaymentMethodVm {
 // Removed API_ENDPOINTS
 
 export const OrderService = {
+    getOrderById: async (id: string) => {
+        return $api.get(`/orders/${id}`);
+    },
     createCart: async (clientId?: string) => {
         const payload = clientId ? { clientId } : {};
         return $api.post(`/orders/cart`, payload);

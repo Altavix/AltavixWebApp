@@ -12,7 +12,7 @@ import "./CheckoutPage.css";
 const CheckoutPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const { orderId, items, totalPrice, totalQuantity, clearCart } = useCart();
+    const { orderId, orderNumber, items, totalPrice, totalQuantity, clearCart } = useCart();
 
     const [fetchDelivery] = useFetching<DeliveryMethodVm[]>(OrderService.getDeliveryMethods);
     const [fetchPayment] = useFetching<PaymentMethodVm[]>(OrderService.getPaymentMethods);
@@ -121,7 +121,7 @@ const CheckoutPage: React.FC = () => {
     return (
         <div className="checkout-page">
             <div className="checkout-container">
-                <h1>Оформлення замовлення</h1>
+                <h1>{orderNumber ? `Оформлення замовлення №${orderNumber}` : 'Оформлення замовлення'}</h1>
                 
                 <div className="checkout-layout">
                     <form className="checkout-form" onSubmit={handleOpenModal}>
@@ -252,6 +252,7 @@ const CheckoutPage: React.FC = () => {
                 onClose={() => setIsModalOpen(false)}
                 onConfirm={handleConfirmCheckout}
                 isLoading={isCheckingOut}
+                orderNumber={orderNumber}
                 totalPrice={totalPrice}
                 totalQuantity={totalQuantity}
                 deliveryPrice={selectedDelivery?.price || 0}
@@ -260,9 +261,9 @@ const CheckoutPage: React.FC = () => {
                 formData={{
                     ...formData,
                     address: selectedDelivery?.type === 2 
-                        ? (novaPoshtaType === "postomat" ? `Поштомат №${formData.address}` : `Відділення №${formData.address}`)
+                        ? (novaPoshtaType === "postomat" ? (formData.address.toLowerCase().includes("пошт") ? formData.address : `Поштомат №${formData.address}`) : (formData.address.toLowerCase().includes("відділ") ? formData.address : `Відділення №${formData.address}`))
                         : selectedDelivery?.type === 5 
-                            ? `Відділення/Індекс: ${formData.address}` 
+                            ? (formData.address.toLowerCase().includes("відділ") || formData.address.toLowerCase().includes("індекс") ? formData.address : `Відділення/Індекс: ${formData.address}`)
                             : formData.address
                 }}
             />

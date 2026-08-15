@@ -7,6 +7,7 @@ import { useFetching } from '../hooks/useFetching';
 
 interface CartContextType {
     orderId: string | null;
+    orderNumber: number | null;
     items: OrderItemVm[];
     isCartOpen: boolean;
     toggleCart: () => void;
@@ -24,11 +25,13 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { user } = useAuth();
     const [orderId, setOrderId] = useState<string | null>(localStorage.getItem('cartOrderId'));
+    const [orderNumber, setOrderNumber] = useState<number | null>(null);
     const [items, setItems] = useState<OrderItemVm[]>([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
 
     // API calls wrapped with useFetching
     const [fetchGetCartItems, isLoadingCartItems] = useFetching<OrderItemVm[]>(CartService.getCartItems);
+    const [fetchGetOrder, isLoadingOrder] = useFetching<any>(OrderService.getOrderById);
     const [fetchCreateCart, isCreatingCart] = useFetching<string>(OrderService.createCart);
     const [fetchAddItem, isAddingItem] = useFetching<string>(CartService.addItem);
     const [fetchUpdateQuantity, isUpdatingQuantity] = useFetching<boolean>(CartService.updateQuantity);
@@ -44,6 +47,12 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const result = await fetchGetCartItems(id);
         if (result.messageType === 'success' && result.data) {
             setItems(result.data);
+            
+            // Fetch order details to get the generated order number
+            const orderResult = await fetchGetOrder(id);
+            if (orderResult.messageType === 'success' && orderResult.data) {
+                setOrderNumber(orderResult.data.number);
+            }
         } else if (result.messageType === 'error') {
             // If the order was already checked out or doesn't exist, clear it
             clearCart();
@@ -138,6 +147,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const clearCart = () => {
         setOrderId(null);
+        setOrderNumber(null);
         setItems([]);
         localStorage.removeItem('cartOrderId');
     };
@@ -145,11 +155,11 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const totalPrice = items.reduce((sum, item) => sum + (item.unitPrice + (item.unitPriceCoin / 100)) * item.quantity, 0);
     const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
     
-    const isLoading = isLoadingCartItems || isCreatingCart || isAddingItem || isUpdatingQuantity || isRemovingItem;
+    const isLoading = isLoadingCartItems || isCreatingCart || isAddingItem || isUpdatingQuantity || isRemovingItem || isLoadingOrder;
 
     return (
         <CartContext.Provider value={{
-            orderId, items, isCartOpen, toggleCart, addToCart, updateQuantity, removeFromCart, clearCart, totalPrice, totalQuantity, isLoading
+            orderId, orderNumber, items, isCartOpen, toggleCart, addToCart, updateQuantity, removeFromCart, clearCart, totalPrice, totalQuantity, isLoading
         }}>
             {children}
         </CartContext.Provider>

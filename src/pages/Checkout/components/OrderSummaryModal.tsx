@@ -6,6 +6,7 @@ interface OrderSummaryModalProps {
     onClose: () => void;
     onConfirm: () => void;
     isLoading: boolean;
+    orderNumber?: number | null;
     totalPrice: number;
     totalQuantity: number;
     deliveryPrice: number;
@@ -26,6 +27,7 @@ const OrderSummaryModal: React.FC<OrderSummaryModalProps> = ({
     onClose,
     onConfirm,
     isLoading,
+    orderNumber,
     totalPrice,
     totalQuantity,
     deliveryPrice,
@@ -41,7 +43,7 @@ const OrderSummaryModal: React.FC<OrderSummaryModalProps> = ({
         <div className="summary-modal-overlay" onClick={onClose}>
             <div className="summary-modal-content" onClick={e => e.stopPropagation()}>
                 <div className="summary-modal-header">
-                    <h2>Підтвердження замовлення</h2>
+                    <h2>{orderNumber ? `Підтвердження замовлення №${orderNumber}` : "Підтвердження замовлення"}</h2>
                     <button className="close-button" onClick={onClose}>&times;</button>
                 </div>
                 
