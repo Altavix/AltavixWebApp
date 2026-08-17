@@ -33,7 +33,7 @@
   max-width: 500px;
 }
 
-.btn-primary {
+.hero-content .btn-primary {
   background-color: var(--color-bg-white);
   color: var(--color-primary);
   border: none;
@@ -45,7 +45,7 @@
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.btn-primary:hover {
+.hero-content .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
@@ -124,7 +124,7 @@
   flex: 1;
 }
 
-.btn-secondary {
+.info-card .btn-secondary {
   background-color: var(--color-primary);
   color: var(--color-text-inverse);
   border: none;
@@ -135,7 +135,7 @@
   transition: opacity 0.2s;
 }
 
-.btn-secondary:hover {
+.info-card .btn-secondary:hover {
   opacity: 0.9;
 }
 

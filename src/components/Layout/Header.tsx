@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useCart } from '../../context/CartContext';
 import UserDropdown from './UserDropdown';
+import AdminDropdown from './AdminDropdown';
 import '../../styles/components/Layout/Header.css';
 
 const Header: React.FC = () => {
@@ -24,9 +25,11 @@ const Header: React.FC = () => {
             <li><a href="#">Про нас</a></li>
             <li><NavLink to="/catalog">Каталог</NavLink></li>
             <li><a href="#">Контакти</a></li>
+            {isAuth && <span style={{display: 'none'}}>{/* Just a placeholder to use isAuth if needed */}</span>}
           </ul>
         </nav>
         <div className="header-actions">
+          <AdminDropdown />
           <button className="icon-btn">🔍</button>
           
           <button className="icon-btn cart-btn" title="Кошик" onClick={toggleCart}>

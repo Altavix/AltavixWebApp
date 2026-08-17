@@ -36,8 +36,22 @@ export const OrderService = {
     getOrderById: async (id: string) => {
         return $api.get(`/orders/${id}`);
     },
-    getOrdersList: async (clientId: string, page = 1, pageSize = 50) => {
-        return $api.get(`/orders?clientId=${clientId}&page=${page}&pageSize=${pageSize}`);
+    getOrdersList: async (clientId?: string, page = 1, pageSize = 50, sortColumn?: string, sortDirection?: string, filters?: Record<string, string>) => {
+        let url = `/orders?page=${page}&pageSize=${pageSize}`;
+        if (clientId) url += `&clientId=${clientId}`;
+        if (sortColumn) url += `&sortColumn=${sortColumn}`;
+        if (sortDirection) url += `&sortDirection=${sortDirection}`;
+        
+        if (filters) {
+            let i = 0;
+            for (const [key, value] of Object.entries(filters)) {
+                if (value) {
+                    url += `&Filters[${i}].Key=${encodeURIComponent(key)}&Filters[${i}].Value=${encodeURIComponent(value)}`;
+                    i++;
+                }
+            }
+        }
+        return $api.get(url);
     },
     createCart: async (clientId?: string) => {
         const payload = clientId ? { clientId } : {};

@@ -1,0 +1,55 @@
+.admin-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.admin-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-page-header h1 {
+    font-size: 1.75rem;
+    color: var(--text);
+    margin: 0;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.status-badge.cancelled {
+    background-color: rgba(255, 68, 68, 0.15);
+    color: #ff4444;
+}
+
+.status-badge.delivered {
+    background-color: rgba(0, 200, 81, 0.15);
+    color: #00C851;
+}
+
+.status-badge.shipped {
+    background-color: rgba(51, 181, 229, 0.15);
+    color: #33b5e5;
+}
+
+.status-badge.processing {
+    background-color: rgba(255, 187, 51, 0.15);
+    color: #ffbb33;
+}
+
+.status-badge.new {
+    background-color: rgba(170, 102, 204, 0.15);
+    color: #aa66cc;
+}
+
+.status-badge.cart {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #aaaaaa;
+}

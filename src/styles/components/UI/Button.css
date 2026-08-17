@@ -26,6 +26,7 @@
 
 .btn-primary:hover:not(:disabled) {
   background-color: var(--color-primary-light);
+  color: var(--color-text-inverse);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(106, 33, 53, 0.3); /* Primary shadow */
 }
@@ -38,6 +39,7 @@
 
 .btn-secondary:hover:not(:disabled) {
   background-color: #CBD5E1;
+  color: var(--color-text-main);
 }
 
 /* Danger / Delete Button */
