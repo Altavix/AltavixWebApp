@@ -5,6 +5,7 @@ import { useCart } from "../../context/CartContext";
 import { OrderService } from "../../services/CartService";
 import type { DeliveryMethodVm, PaymentMethodVm } from "../../services/CartService";
 import { useFetching } from "../../hooks/useFetching";
+import { UserService } from "../../services/UserService";
 import OrderSummaryModal from "./components/OrderSummaryModal";
 import OrderFormFields from "../../components/Orders/OrderFormFields";
 import { formatDeliveryAddress } from "../../utils/orderUtils";
@@ -18,6 +19,19 @@ const CheckoutPage: React.FC = () => {
     const [fetchDelivery] = useFetching<DeliveryMethodVm[]>(OrderService.getDeliveryMethods);
     const [fetchPayment] = useFetching<PaymentMethodVm[]>(OrderService.getPaymentMethods);
     const [fetchCheckout, isCheckingOut] = useFetching(OrderService.checkout);
+
+    const [fetchProfile] = useFetching(async (id: string) => {
+        const response = await UserService.getUserProfile(id);
+        if (response.data) {
+            const fullName = `${response.data.lastName || ''} ${response.data.firstName || ''} ${response.data.middleName || ''}`.trim();
+            setFormData(prev => ({
+                ...prev,
+                clientName: fullName || prev.clientName,
+                clientEmail: response.data.email || prev.clientEmail,
+                clientMobilePhone: response.data.phoneNumber || user?.phoneNumber || prev.clientMobilePhone
+            }));
+        }
+    });
 
     const [deliveryMethods, setDeliveryMethods] = useState<DeliveryMethodVm[]>([]);
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethodVm[]>([]);
@@ -46,9 +60,11 @@ const CheckoutPage: React.FC = () => {
         if (user) {
             setFormData(prev => ({
                 ...prev,
-                clientName: user.username || "",
-                clientEmail: user.email || ""
+                clientName: user.name || "",
+                clientEmail: user.email || "",
+                clientMobilePhone: user.phoneNumber || ""
             }));
+            fetchProfile(user.id);
         }
 
         const loadMethods = async () => {
@@ -113,7 +129,14 @@ const CheckoutPage: React.FC = () => {
                 <h1>{orderNumber ? `Оформлення замовлення №${orderNumber}` : 'Оформлення замовлення'}</h1>
                 
                 <div className="checkout-layout">
-                    <form className="checkout-form" onSubmit={handleOpenModal}>
+                    <div className="checkout-main-content">
+                        {!user && (
+                            <div className="checkout-login-prompt">
+                                <span>Вже маєте акаунт? Авторизуйтесь для зручнішого оформлення.</span>
+                                <button className="btn-secondary" onClick={() => navigate('/login?redirect=/checkout')}>Увійти</button>
+                            </div>
+                        )}
+                        <form className="checkout-form" onSubmit={handleOpenModal}>
                         <OrderFormFields
                             formData={formData}
                             deliveryMethods={deliveryMethods}
@@ -126,6 +149,7 @@ const CheckoutPage: React.FC = () => {
                         />
                         <button type="submit" className="checkout-submit-btn" style={{ marginTop: '2rem' }}>Замовити</button>
                     </form>
+                    </div>
 
                     <aside className="checkout-sidebar">
                         <h2>Ваше замовлення</h2>

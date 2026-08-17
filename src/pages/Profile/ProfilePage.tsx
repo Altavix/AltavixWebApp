@@ -6,7 +6,7 @@ import { useFetching } from '../../hooks/useFetching';
 import '../../styles/pages/Profile/ProfilePage.css';
 
 const ProfilePage: React.FC = () => {
-    const { user, logout } = useAuth();
+    const { user, logout, isLoading: isAuthLoading } = useAuth();
     const navigate = useNavigate();
 
     const [profile, setProfile] = useState<UserProfileDto>({
@@ -31,22 +31,20 @@ const ProfilePage: React.FC = () => {
     });
 
     const [saveProfile, isSaving, saveError] = useFetching(async (data: UserProfileDto) => {
-        const response = await UserService.updateUserProfile(data);
-        if (response.messageType === 'success') {
-            alert('Профіль успішно оновлено!');
-        } else {
-            alert(response.message || 'Помилка при оновленні профілю');
-        }
+        return await UserService.updateUserProfile(data);
     });
 
     useEffect(() => {
+        if (isAuthLoading) return;
+        
         if (!user) {
             navigate('/login');
             return;
         }
         fetchProfile(user.id);
-    }, [user, navigate]);
+    }, [user, isAuthLoading, navigate]);
 
+    if (isAuthLoading) return <div style={{ textAlign: 'center', padding: '2rem' }}>Завантаження...</div>;
     if (!user) return null;
 
     const handleLogout = () => {

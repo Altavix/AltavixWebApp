@@ -33,11 +33,12 @@ const Login: React.FC = () => {
     if (!result) return;
     
     if (result.messageType === 'success' && result.data) {
-      const fullName = `${result.data.firstName || ''} ${result.data.lastName || ''}`.trim();
+      const fullName = `${result.data.lastName || ''} ${result.data.firstName || ''} ${result.data.middleName || ''}`.trim();
       login({ 
         id: result.data.userId || '1', 
         email: email, 
         name: fullName || email,
+        phoneNumber: result.data.phoneNumber,
         role: result.data.role
       });
       showToast('Успішний вхід!', 'success');
