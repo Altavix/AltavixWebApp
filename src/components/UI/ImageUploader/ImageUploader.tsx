@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import './ImageUploader.css';
+import '../../../styles/components/UI/ImageUploader.css';
 
 interface ImageUploaderProps {
   images: string[];

@@ -6,14 +6,20 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   error?: string;
 }
 
-const Input: React.FC<InputProps> = ({ label, error, className = '', ...props }) => {
+const Input: React.FC<InputProps> = ({ label, error, className = '', value, defaultValue, ...props }) => {
+  const hasValue = value !== undefined && value !== '' && value !== null 
+                || defaultValue !== undefined && defaultValue !== '' && defaultValue !== null;
+
   return (
-    <div className={`input-group ${className}`}>
-      {label && <label className="input-label">{label}</label>}
+    <div className={`input-group ${hasValue ? 'has-value' : ''} ${className}`}>
       <input 
-        className={`input-field ${error ? 'input-error' : ''}`} 
+        className={`base-input-control ${error ? 'error' : ''}`} 
+        placeholder={label ? " " : props.placeholder}
+        value={value}
+        defaultValue={defaultValue}
         {...props} 
       />
+      {label && <label className="floating-label">{label}</label>}
       {error && <span className="error-message">{error}</span>}
     </div>
   );

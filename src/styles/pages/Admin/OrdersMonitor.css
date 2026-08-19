@@ -53,3 +53,40 @@
     background-color: rgba(255, 255, 255, 0.1);
     color: #aaaaaa;
 }
+
+.status-context-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 0.5rem;
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: var(--radius, 8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    min-width: 150px;
+    padding: 0.25rem 0;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+/* Custom scrollbar for context menu */
+.status-context-menu::-webkit-scrollbar {
+    width: 6px;
+}
+.status-context-menu::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.status-menu-item {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.status-menu-item:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}

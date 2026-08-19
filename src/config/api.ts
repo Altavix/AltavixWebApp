@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_BASE_URL = 'http://localhost:5052/api';
+export const API_BASE_URL = 'https://localhost:7248/api';
 
 export const API_ENDPOINTS = {
   AUTH: `${API_BASE_URL}/Auth`,

@@ -1,7 +1,7 @@
 import React from 'react';
 import Select from '../UI/Select/Select';
 import type { DeliveryMethodVm, PaymentMethodVm } from '../../services/CartService';
-import './OrderFormFields.css';
+import '../../styles/components/Orders/OrderFormFields.css';
 
 export interface OrderFormData {
     clientName: string;
@@ -64,8 +64,8 @@ const OrderFormFields: React.FC<OrderFormFieldsProps> = ({
                         <Select 
                             label="Спосіб доставки *"
                             options={deliveryMethods.map(m => ({ 
-                                value: m.id, 
-                                label: `${m.title} ${m.price > 0 ? `(+${m.price.toFixed(2)} ₴)` : ""}` 
+                                key: m.id, 
+                                value: `${m.title} ${m.price > 0 ? `(+${m.price.toFixed(2)} ₴)` : ""}` 
                             }))}
                             selectedValue={formData.deliveryMethodId || ''}
                             onChange={(value) => onSelectChange('deliveryMethodId', value)}
@@ -86,8 +86,8 @@ const OrderFormFields: React.FC<OrderFormFieldsProps> = ({
                                 <Select 
                                     label="Тип *"
                                     options={[
-                                        { value: "branch", label: "На відділення" },
-                                        { value: "postomat", label: "На поштомат" }
+                                        { key: "branch", value: "На відділення" },
+                                        { key: "postomat", value: "На поштомат" }
                                     ]}
                                     selectedValue={novaPoshtaType}
                                     onChange={(val) => setNovaPoshtaType(val as "branch" | "postomat")}
@@ -118,8 +118,8 @@ const OrderFormFields: React.FC<OrderFormFieldsProps> = ({
                     <Select 
                         label="Спосіб оплати *"
                         options={paymentMethods.map(m => ({ 
-                            value: m.id, 
-                            label: m.title 
+                            key: m.id, 
+                            value: m.title 
                         }))}
                         selectedValue={formData.paymentMethodId || ''}
                         onChange={(value) => onSelectChange('paymentMethodId', value)}

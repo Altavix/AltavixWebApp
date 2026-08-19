@@ -1,21 +1,12 @@
 .select-wrapper {
   position: relative;
   width: 100%;
-  margin-bottom: 1rem;
 }
 
 .select-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  cursor: pointer;
-  user-select: none;
-  min-height: 46px;
-}
-
-.select-container.open {
-  border-color: var(--color-primary-light);
-  box-shadow: 0 0 0 3px rgba(106, 33, 53, 0.1);
 }
 
 .select-text {

@@ -63,14 +63,23 @@ export const OrderService = {
     updateOrderDetails: async (id: string, payload: any) => {
         return $api.put(`/orders/${id}`, payload);
     },
+    updateOrderStatus: async (id: string, newStatus: number) => {
+        return $api.put(`/orders/${id}/status`, { newStatus });
+    },
     cancelOrder: async (id: string) => {
         return $api.post(`/orders/${id}/cancel`);
     },
     getDeliveryMethods: async () => {
         return $api.get(`/deliverymethods/active`);
     },
+    getDeliveryMethodOptions: async () => {
+        return $api.get(`/deliverymethods/options`);
+    },
     getPaymentMethods: async () => {
         return $api.get(`/paymentmethods/active`);
+    },
+    getPaymentMethodOptions: async () => {
+        return $api.get(`/paymentmethods/options`);
     }
 };
 

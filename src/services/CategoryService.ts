@@ -9,6 +9,10 @@ export default class CategoryService {
     return response;
   }
 
+  static async getOptions() {
+    return await $api.get(`${API_URL}/options`);
+  }
+
   static async create(title: string) {
     const response = await $api.post<string>(API_URL, { title });
     return response;

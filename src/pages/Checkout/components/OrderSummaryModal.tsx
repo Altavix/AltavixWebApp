@@ -1,5 +1,5 @@
 import React from "react";
-import "./OrderSummaryModal.css";
+import '../../../styles/pages/Checkout/OrderSummaryModal.css';
 
 interface OrderSummaryModalProps {
     isOpen: boolean;

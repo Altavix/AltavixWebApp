@@ -1,13 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../../../styles/components/UI/MultiSelect.css';
-
-export interface Option {
-  value: string;
-  label: string;
-}
+import type { KeyValue } from '../../../types/common';
 
 interface MultiSelectProps {
-  options: Option[];
+  options: KeyValue[];
   selectedValues: string[];
   onChange: (selected: string[]) => void;
   placeholder?: string;
@@ -37,28 +33,27 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
     };
   }, []);
 
-  const handleCheckboxChange = (value: string) => {
-    if (selectedValues.includes(value)) {
-      onChange(selectedValues.filter(v => v !== value));
+  const handleCheckboxChange = (key: string) => {
+    if (selectedValues.includes(key)) {
+      onChange(selectedValues.filter(v => v !== key));
     } else {
-      onChange([...selectedValues, value]);
+      onChange([...selectedValues, key]);
     }
   };
 
   const selectedLabels = selectedValues
-    .map(val => options.find(o => o.value === val)?.label)
+    .map(val => options.find(o => o.key === val)?.value)
     .filter(Boolean)
     .join(', ');
 
   return (
-    <div className="multiselect-wrapper" ref={containerRef}>
-      {label && <label className="input-label" style={{ marginBottom: '8px', display: 'block' }}>{label}</label>}
+    <div className={`input-group ${selectedValues.length > 0 ? 'has-value' : ''}`} ref={containerRef}>
       <div 
-        className={`multiselect-container input-field ${isOpen ? 'open' : ''}`}
+        className={`multiselect-container base-input-control ${isOpen ? 'open' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="multiselect-text">
-          {selectedLabels || <span className="multiselect-placeholder">{placeholder}</span>}
+          {selectedLabels || (!label && <span className="multiselect-placeholder">{placeholder}</span>)}
         </div>
         <div className="multiselect-arrow">
           <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -66,6 +61,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           </svg>
         </div>
       </div>
+      {label && <label className="floating-label">{label}</label>}
 
       {isOpen && (
         <div className="multiselect-dropdown">
@@ -74,16 +70,16 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           ) : (
             options.map(option => (
               <label 
-                key={option.value} 
+                key={option.key} 
                 className="multiselect-option"
                 onClick={(e) => e.stopPropagation()}
               >
                 <input
                   type="checkbox"
-                  checked={selectedValues.includes(option.value)}
-                  onChange={() => handleCheckboxChange(option.value)}
+                  checked={selectedValues.includes(option.key)}
+                  onChange={() => handleCheckboxChange(option.key)}
                 />
-                <span>{option.label}</span>
+                <span>{option.value}</span>
               </label>
             ))
           )}

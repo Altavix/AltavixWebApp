@@ -1,38 +1,82 @@
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  position: relative;
+  margin-top: 0.5rem;
   margin-bottom: 1rem;
   width: 100%;
 }
 
-.input-label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--color-text-main);
+.floating-label {
+  position: absolute;
+  left: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: transparent;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  pointer-events: none;
+  transition: top 0.2s, font-size 0.2s, color 0.2s, background-color 0.2s;
+  padding: 0 4px;
+  z-index: 10;
 }
 
+.input-group:focus-within .floating-label,
+.input-group.has-value .floating-label,
+.base-input-control.open ~ .floating-label,
+input.base-input-control:not(:placeholder-shown) ~ .floating-label,
+textarea.base-input-control:not(:placeholder-shown) ~ .floating-label,
+input.input-field:not(:placeholder-shown) ~ .floating-label,
+textarea.input-field:not(:placeholder-shown) ~ .floating-label {
+  top: 0;
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  background-color: var(--color-bg-white);
+}
+
+.base-input-control::placeholder,
+.input-field::placeholder {
+  color: transparent;
+}
+
+.base-input-control,
 .input-field {
-  padding: 0.8rem 1rem;
+  height: 42px;
+  min-height: 42px;
+  padding: 0 0.8rem;
   border: 1px solid #CBD5E1;
   border-radius: var(--border-radius);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-family: inherit;
   transition: border-color 0.2s, box-shadow 0.2s;
   background-color: var(--color-bg-white);
   color: var(--color-text-main);
+  box-sizing: border-box;
+  width: 100%;
 }
 
+/* For when base-input-control is used on a div (like Select) */
+div.base-input-control {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.base-input-control:focus,
+.base-input-control.open,
 .input-field:focus {
   outline: none;
   border-color: var(--color-primary-light);
   box-shadow: 0 0 0 3px rgba(106, 33, 53, 0.1);
 }
 
+.base-input-control.error,
 .input-error {
   border-color: #DC2626;
 }
 
+.base-input-control.error:focus,
 .input-error:focus {
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }

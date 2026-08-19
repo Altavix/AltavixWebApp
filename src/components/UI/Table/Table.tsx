@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import MultiSelect from '../Select/MultiSelect';
-import './Table.css';
+import Input from '../Input';
+import Button from '../Button';
+import type { KeyValue } from '../../../types/common';
+import '../../../styles/components/UI/Table.css';
 
 export interface Column<T> {
     key: keyof T | string;
     title: string;
     sortable?: boolean;
     filterable?: boolean;
-    filterOptions?: { value: string; label: string }[];
+    filterType?: 'text' | 'select' | 'dateRange' | 'numberRange';
+    filterOptions?: KeyValue[];
     render?: (item: T) => React.ReactNode;
 }
 
@@ -68,30 +72,58 @@ export function Table<T>({
         <div className="table-container">
             <div className="table-header-actions">
                 <form className="table-filters" onSubmit={handleFilterSubmit}>
-                    {columns.filter(c => c.filterable).map(col => (
-                        <div key={String(col.key)} className="filter-group">
-                            {col.filterOptions ? (
-                                <MultiSelect 
-                                    options={col.filterOptions}
-                                    selectedValues={localFilters[String(col.key)] ? localFilters[String(col.key)].split(',') : []}
-                                    onChange={(selected) => setLocalFilters(prev => ({ ...prev, [String(col.key)]: selected.join(',') }))}
-                                    placeholder={`Фільтр: ${col.title}`}
-                                />
-                            ) : (
-                                <input 
-                                    type="text"
-                                    placeholder={`Пошук: ${col.title}`}
-                                    value={localFilters[String(col.key)] || ''}
-                                    onChange={(e) => setLocalFilters(prev => ({ ...prev, [String(col.key)]: e.target.value }))}
-                                    className="form-control"
-                                />
-                            )}
-                        </div>
-                    ))}
+                    {columns.filter(c => c.filterable).map(col => {
+                        const type = col.filterType || (col.filterOptions ? 'select' : 'text');
+                        
+                        if (type === 'numberRange' || type === 'dateRange') {
+                            const inputType = type === 'numberRange' ? 'number' : 'date';
+                            return (
+                                <React.Fragment key={String(col.key)}>
+                                    <div className="filter-group">
+                                        <Input 
+                                            type={inputType} 
+                                            label={`${col.title} (від)`}
+                                            value={localFilters[`Min${String(col.key)}`] || ''}
+                                            onChange={e => setLocalFilters(prev => ({ ...prev, [`Min${String(col.key)}`]: e.target.value }))}
+                                        />
+                                    </div>
+                                    <div className="filter-group">
+                                        <Input 
+                                            type={inputType} 
+                                            label={`${col.title} (до)`}
+                                            value={localFilters[`Max${String(col.key)}`] || ''}
+                                            onChange={e => setLocalFilters(prev => ({ ...prev, [`Max${String(col.key)}`]: e.target.value }))}
+                                        />
+                                    </div>
+                                </React.Fragment>
+                            );
+                        }
+
+                        return (
+                            <div key={String(col.key)} className="filter-group">
+                                {type === 'select' && (
+                                    <MultiSelect 
+                                        options={col.filterOptions || []}
+                                        selectedValues={localFilters[String(col.key)] ? localFilters[String(col.key)].split(',') : []}
+                                        onChange={(selected) => setLocalFilters(prev => ({ ...prev, [String(col.key)]: selected.join(',') }))}
+                                        label={col.title}
+                                    />
+                                )}
+                                {type === 'text' && (
+                                    <Input 
+                                        type="text"
+                                        label={col.title}
+                                        value={localFilters[String(col.key)] || ''}
+                                        onChange={(e) => setLocalFilters(prev => ({ ...prev, [String(col.key)]: e.target.value }))}
+                                    />
+                                )}
+                            </div>
+                        );
+                    })}
                     {columns.some(c => c.filterable) && (
                         <div className="filter-buttons">
-                            <button type="submit" className="btn-primary btn-sm" disabled={isLoading}>Застосувати</button>
-                            <button type="button" className="btn-secondary btn-sm" onClick={handleFilterReset} disabled={isLoading}>Скинути</button>
+                            <Button type="submit" variant="primary" disabled={isLoading} className="btn-sm">Застосувати</Button>
+                            <Button type="button" variant="secondary" onClick={handleFilterReset} disabled={isLoading} className="btn-sm">Скинути</Button>
                         </div>
                     )}
                 </form>
@@ -145,21 +177,23 @@ export function Table<T>({
 
             {totalPages > 1 && (
                 <div className="table-pagination">
-                    <button 
+                    <Button 
+                        variant="secondary"
                         disabled={page === 1 || isLoading} 
                         onClick={() => onPageChange(page - 1)}
-                        className="btn-secondary btn-sm"
+                        className="btn-sm"
                     >
                         Попередня
-                    </button>
+                    </Button>
                     <span>Сторінка {page} з {totalPages}</span>
-                    <button 
+                    <Button 
+                        variant="secondary"
                         disabled={page === totalPages || isLoading} 
                         onClick={() => onPageChange(page + 1)}
-                        className="btn-secondary btn-sm"
+                        className="btn-sm"
                     >
                         Наступна
-                    </button>
+                    </Button>
                 </div>
             )}
         </div>

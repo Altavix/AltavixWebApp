@@ -1,13 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../../../styles/components/UI/Select.css';
-
-export interface Option {
-  value: string;
-  label: string;
-}
+import type { KeyValue } from '../../../types/common';
 
 interface SelectProps {
-  options: Option[];
+  options: KeyValue[];
   selectedValue: string;
   onChange: (selected: string) => void;
   placeholder?: string;
@@ -37,22 +33,21 @@ const Select: React.FC<SelectProps> = ({
     };
   }, []);
 
-  const handleOptionClick = (value: string) => {
-    onChange(value);
+  const handleOptionClick = (key: string) => {
+    onChange(key);
     setIsOpen(false);
   };
 
-  const selectedLabel = options.find(o => o.value === selectedValue)?.label;
+  const selectedLabel = options.find(o => o.key === selectedValue)?.value;
 
   return (
-    <div className="select-wrapper" ref={containerRef}>
-      {label && <label className="input-label" style={{ marginBottom: '8px', display: 'block' }}>{label}</label>}
+    <div className={`input-group ${selectedValue ? 'has-value' : ''}`} ref={containerRef}>
       <div 
-        className={`select-container input-field ${isOpen ? 'open' : ''}`}
+        className={`select-container base-input-control ${isOpen ? 'open' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="select-text">
-          {selectedLabel || <span className="select-placeholder">{placeholder}</span>}
+          {selectedLabel || (!label && <span className="select-placeholder">{placeholder}</span>)}
         </div>
         <div className="select-arrow">
           <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -60,6 +55,7 @@ const Select: React.FC<SelectProps> = ({
           </svg>
         </div>
       </div>
+      {label && <label className="floating-label">{label}</label>}
 
       {isOpen && (
         <div className="select-dropdown">
@@ -68,11 +64,11 @@ const Select: React.FC<SelectProps> = ({
           ) : (
             options.map(option => (
               <div 
-                key={option.value} 
-                className={`select-option ${selectedValue === option.value ? 'selected' : ''}`}
-                onClick={() => handleOptionClick(option.value)}
+                key={option.key} 
+                className={`select-option ${selectedValue === option.key ? 'selected' : ''}`}
+                onClick={() => handleOptionClick(option.key)}
               >
-                <span>{option.label}</span>
+                <span>{option.value}</span>
               </div>
             ))
           )}

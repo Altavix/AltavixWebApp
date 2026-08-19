@@ -46,14 +46,14 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
     (initialData?.images || []).map(ensureBase64Prefix)
   );
   
-  const [categories, setCategories] = useState<CategoryDto[]>([]);
+  const [categories, setCategories] = useState<{key: string, value: string}[]>([]);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const fetchCategories = async () => {
     try {
-      const response = await CategoryService.getAll();
-      if (response?.data?.categories) {
-        setCategories(response.data.categories);
+      const response = await CategoryService.getOptions();
+      if (response?.data) {
+        setCategories(response.data);
       }
     } catch (error) {
       console.error("Failed to fetch categories", error);
@@ -173,7 +173,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
             </button>
           </div>
           <MultiSelect
-            options={categories.map(c => ({ value: c.id, label: c.title }))}
+            options={categories}
             selectedValues={selectedCategories}
             onChange={setSelectedCategories}
             placeholder="Виберіть категорії..."

@@ -19,15 +19,48 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Only check if user data exists in localStorage
-    const savedUser = localStorage.getItem('user');
-    
-    if (savedUser) {
-      setIsAuth(true);
-      setUser(JSON.parse(savedUser));
-    }
-    
-    setIsLoading(false);
+    const checkAuth = async () => {
+      // First check local storage for fast load
+      const savedUser = localStorage.getItem('user');
+      
+      if (savedUser) {
+        setIsAuth(true);
+        setUser(JSON.parse(savedUser));
+        setIsLoading(false);
+        return;
+      }
+      
+      // If no user in local storage, try to authenticate via refresh cookie
+      try {
+        const { default: axios } = await import('axios');
+        const { API_ENDPOINTS } = await import('../config/api');
+        
+        // This will send the cookies automatically if they exist
+        const response = await axios.post(`${API_ENDPOINTS.AUTH}/refresh`, {}, { withCredentials: true });
+        
+        if (response.data?.messageType === 'success' && response.data.data) {
+          const authData = response.data.data;
+          const userData: User = {
+            id: authData.userId,
+            email: authData.email || '',
+            role: authData.role,
+            name: authData.firstName ? `${authData.firstName} ${authData.lastName || ''}`.trim() : undefined,
+            phoneNumber: authData.phoneNumber
+          };
+          
+          setIsAuth(true);
+          setUser(userData);
+          localStorage.setItem('user', JSON.stringify(userData));
+        }
+      } catch (error) {
+        // No valid session
+        console.log('No valid session found via cookies.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
   }, []);
 
   const login = (userData: User) => {

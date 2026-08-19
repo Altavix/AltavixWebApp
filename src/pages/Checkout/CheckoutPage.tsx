@@ -9,7 +9,7 @@ import { UserService } from "../../services/UserService";
 import OrderSummaryModal from "./components/OrderSummaryModal";
 import OrderFormFields from "../../components/Orders/OrderFormFields";
 import { formatDeliveryAddress } from "../../utils/orderUtils";
-import "./CheckoutPage.css";
+import '../../styles/pages/Checkout/CheckoutPage.css';
 
 const CheckoutPage: React.FC = () => {
     const navigate = useNavigate();
