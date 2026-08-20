@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { OrderService, CartService, type DeliveryMethodVm, type PaymentMethodVm } from '../../services/CartService';
 import Loader from '../UI/Loader';
+import Button from '../UI/Button';
 import OrderFormFields from '../Orders/OrderFormFields';
 import { formatDeliveryAddress } from '../../utils/orderUtils';
 import '../../styles/pages/Profile/OrderDetailsModal.css';
@@ -39,6 +40,8 @@ interface OrderDetailsModalProps {
     onClose: () => void;
 }
 
+import { useAuth } from '../../hooks/useAuth';
+
 const statusMap: Record<number, { label: string; color: string }> = {
     0: { label: 'Нове / Кошик', color: '#6b7280' },
     1: { label: 'Оформлено', color: '#3b82f6' },
@@ -50,6 +53,9 @@ const statusMap: Record<number, { label: string; color: string }> = {
 };
 
 const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose }) => {
+    const { user } = useAuth();
+    const isAdmin = user?.role === 'Admin';
+
     const [order, setOrder] = useState<OrderDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -157,8 +163,14 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose 
                 paymentMethodId: formData.paymentMethodId
             };
             
-            const res = await OrderService.updateOrderDetails(orderId, payload);
-            if (res.messageType === 'success') {
+            const res = await OrderService.updateOrderDetails(orderId, payload, isAdmin);
+            let statusRes = { messageType: 'success' };
+            
+            if (isAdmin && formData.status !== undefined && Number(formData.status) !== order.status) {
+                statusRes = await OrderService.updateOrderStatus(orderId, Number(formData.status)) as any;
+            }
+
+            if (res.messageType === 'success' && (statusRes?.messageType === 'success' || statusRes?.messageType === undefined)) {
                 await fetchOrderDetails(); // Refresh
                 setIsEditing(false);
             } else {
@@ -189,7 +201,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose 
     const handleItemQuantity = async (itemId: string, newQty: number) => {
         if (newQty < 1) return;
         try {
-            await CartService.updateQuantity(orderId, itemId, newQty);
+            await CartService.updateQuantity(orderId, itemId, newQty, isAdmin);
             fetchOrderDetails();
         } catch (err) {
             console.error(err);
@@ -198,14 +210,14 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose 
 
     const handleRemoveItem = async (itemId: string) => {
         try {
-            await CartService.removeItem(orderId, itemId);
+            await CartService.removeItem(orderId, itemId, isAdmin);
             fetchOrderDetails();
         } catch (err) {
             console.error(err);
         }
     };
 
-    const canEdit = order && order.status <= 1;
+    const canEdit = order && (isAdmin ? order.status <= 2 : order.status <= 1);
 
     return (
         <div className="modal-backdrop" onClick={handleBackdropClick}>
@@ -228,9 +240,22 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose 
                                     <span className="text-muted">{new Date(order.created).toLocaleString('uk-UA')}</span>
                                 </div>
                                 <div className="header-actions">
-                                    <span className="status-badge" style={{ backgroundColor: `${statusMap[order.status]?.color || '#000'}15`, color: statusMap[order.status]?.color || '#000' }}>
-                                        {statusMap[order.status]?.label || 'Невідомо'}
-                                    </span>
+                                    {isEditing && isAdmin ? (
+                                        <select 
+                                            name="status"
+                                            value={formData.status ?? order.status}
+                                            onChange={(e) => handleSelectChange('status', e.target.value)}
+                                            style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                                        >
+                                            {Object.entries(statusMap).map(([val, {label}]) => (
+                                                <option key={val} value={val}>{label}</option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <span className="status-badge" style={{ backgroundColor: `${statusMap[order.status]?.color || '#000'}15`, color: statusMap[order.status]?.color || '#000' }}>
+                                            {statusMap[order.status]?.label || 'Невідомо'}
+                                        </span>
+                                    )}
                                     {canEdit && !isEditing && (
                                         <button className="btn-edit" onClick={() => setIsEditing(true)}>✏️ Редагувати</button>
                                     )}
@@ -327,13 +352,13 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose 
 
                             <div className="details-footer">
                                 <div className="actions-left">
-                                    <button 
-                                        className={`btn-cancel-order ${!canEdit || order.status === 6 ? 'disabled' : ''}`}
+                                    <Button 
+                                        variant="danger"
                                         onClick={canEdit && order.status !== 6 ? handleCancelOrder : undefined}
                                         disabled={!canEdit || order.status === 6}
                                     >
                                         Скасувати замовлення
-                                    </button>
+                                    </Button>
                                     {(!canEdit && order.status !== 6) && (
                                         <p className="cancel-notice">Для скасування зв'яжіться з менеджером</p>
                                     )}
@@ -341,8 +366,8 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose 
                                 <div className="actions-right">
                                     {isEditing && (
                                         <div className="edit-actions">
-                                            <button className="btn-secondary" onClick={() => { setIsEditing(false); fetchOrderDetails(); }}>Відмінити</button>
-                                            <button className="btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Збереження...' : 'Зберегти зміни'}</button>
+                                            <Button variant="secondary" onClick={() => { setIsEditing(false); fetchOrderDetails(); }}>Відмінити</Button>
+                                            <Button variant="primary" onClick={handleSave} isLoading={saving}>Зберегти зміни</Button>
                                         </div>
                                     )}
                                     <div className="total-price-box">
