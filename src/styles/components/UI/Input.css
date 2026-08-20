@@ -86,3 +86,12 @@ div.base-input-control {
   font-size: 0.8rem;
   margin-top: 0.2rem;
 }
+
+.textarea-control {
+  height: auto;
+  min-height: 80px;
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
+  resize: vertical;
+}
+

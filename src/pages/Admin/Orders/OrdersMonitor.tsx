@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Table } from '../../../components/UI/Table/Table';
 import type { Column } from '../../../components/UI/Table/Table';
 import { useFetching } from '../../../hooks/useFetching';
 import { OrderService } from '../../../services/CartService';
 import { Link, useNavigate } from 'react-router-dom';
+import OrderDetailsModal from '../../../components/Profile/OrderDetailsModal';
 import '../../../styles/pages/Admin/OrdersMonitor.css';
 
 interface OrderSummary {
@@ -32,9 +33,11 @@ const OrdersMonitor: React.FC = () => {
     // Table state
     const [page, setPage] = useState(1);
     const [pageSize] = useState(20);
-    const [sortColumn, setSortColumn] = useState<string>('Created');
+    const [sortColumn, setSortColumn] = useState<string>('created');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
     const [filters, setFilters] = useState<Record<string, string>>({});
+    
+    const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
     const [paymentMethods, setPaymentMethods] = useState<{key: string, value: string}[]>([]);
     const [deliveryMethods, setDeliveryMethods] = useState<{key: string, value: string}[]>([]);
@@ -223,8 +226,18 @@ const OrdersMonitor: React.FC = () => {
                     setFilters(newFilters);
                     setPage(1); // Reset page on filter
                 }}
-                onRowClick={(item) => navigate(`/checkout?orderId=${item.id}`)}
+                onRowClick={(item) => setSelectedOrderId(item.id)}
             />
+
+            {selectedOrderId && (
+                <OrderDetailsModal 
+                    orderId={selectedOrderId} 
+                    onClose={() => {
+                        setSelectedOrderId(null);
+                        fetchOrders(); // refresh after edit
+                    }} 
+                />
+            )}
 
             {activeStatusMenu && menuPosition && createPortal(
                 <div 

@@ -1,5 +1,7 @@
 import React from 'react';
 import Select from '../UI/Select/Select';
+import Input from '../UI/Input';
+import Textarea from '../UI/Textarea';
 import type { DeliveryMethodVm, PaymentMethodVm } from '../../services/CartService';
 import '../../styles/components/Orders/OrderFormFields.css';
 
@@ -43,16 +45,13 @@ const OrderFormFields: React.FC<OrderFormFieldsProps> = ({
                 <h3>Контактні дані</h3>
                 <div className="form-grid">
                     <div className="form-group">
-                        <label>ПІБ *</label>
-                        <input type="text" name="clientName" value={formData.clientName || ''} onChange={onInputChange} required />
+                        <Input label="ПІБ *" type="text" name="clientName" value={formData.clientName || ''} onChange={onInputChange} required />
                     </div>
                     <div className="form-group">
-                        <label>Телефон *</label>
-                        <input type="tel" name="clientMobilePhone" value={formData.clientMobilePhone || ''} onChange={onInputChange} required />
+                        <Input label="Телефон *" type="tel" name="clientMobilePhone" value={formData.clientMobilePhone || ''} onChange={onInputChange} required />
                     </div>
                     <div className="form-group">
-                        <label>Email</label>
-                        <input type="email" name="clientEmail" value={formData.clientEmail || ''} onChange={onInputChange} />
+                        <Input label="Email" type="email" name="clientEmail" value={formData.clientEmail || ''} onChange={onInputChange} />
                     </div>
                 </div>
             </section>
@@ -74,8 +73,7 @@ const OrderFormFields: React.FC<OrderFormFieldsProps> = ({
                     </div>
 
                     <div className="form-group">
-                        <label>Місто *</label>
-                        <input type="text" name="city" value={formData.city || ''} onChange={onInputChange} required />
+                        <Input label="Місто *" type="text" name="city" value={formData.city || ''} onChange={onInputChange} required />
                     </div>
                 </div>
 
@@ -94,19 +92,16 @@ const OrderFormFields: React.FC<OrderFormFieldsProps> = ({
                                 />
                             </div>
                             <div className="form-group">
-                                <label>{novaPoshtaType === "branch" ? "Номер відділення *" : "Номер поштомату *"}</label>
-                                <input type="text" name="address" value={formData.address || ''} onChange={onInputChange} required placeholder="наприклад, 42" />
+                                <Input label={novaPoshtaType === "branch" ? "Номер відділення *" : "Номер поштомату *"} type="text" name="address" value={formData.address || ''} onChange={onInputChange} required placeholder="наприклад, 42" />
                             </div>
                         </>
                     ) : selectedDelivery?.type === 5 ? (
                         <div className="form-group full-width">
-                            <label>Номер відділення або індекс *</label>
-                            <input type="text" name="address" value={formData.address || ''} onChange={onInputChange} required placeholder="наприклад, 01001" />
+                            <Input label="Номер відділення або індекс *" type="text" name="address" value={formData.address || ''} onChange={onInputChange} required placeholder="наприклад, 01001" />
                         </div>
                     ) : (
                         <div className="form-group full-width">
-                            <label>{[3, 4, 6].includes(selectedDelivery?.type || 0) ? 'Адреса *' : 'Адреса / Відділення *'}</label>
-                            <input type="text" name="address" value={formData.address || ''} onChange={onInputChange} required />
+                            <Input label={[3, 4, 6].includes(selectedDelivery?.type || 0) ? 'Адреса *' : 'Адреса / Відділення *'} type="text" name="address" value={formData.address || ''} onChange={onInputChange} required />
                         </div>
                     )}
                 </div>
@@ -131,8 +126,9 @@ const OrderFormFields: React.FC<OrderFormFieldsProps> = ({
             {showComment && (
                 <section className="form-section">
                     <h3>Коментар</h3>
-                    <div className="form-group">
-                        <textarea 
+                    <div className="form-group full-width">
+                        <Textarea 
+                            label="Коментар"
                             name="comment" 
                             value={formData.comment || ''} 
                             onChange={onInputChange} 

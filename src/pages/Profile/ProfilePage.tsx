@@ -3,6 +3,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { UserService, type UserProfileDto } from '../../services/UserService';
 import { useFetching } from '../../hooks/useFetching';
+import Loader from '../../components/UI/Loader';
 import '../../styles/pages/Profile/ProfilePage.css';
 
 const ProfilePage: React.FC = () => {
@@ -44,7 +45,7 @@ const ProfilePage: React.FC = () => {
         fetchProfile(user.id);
     }, [user, isAuthLoading, navigate]);
 
-    if (isAuthLoading) return <div style={{ textAlign: 'center', padding: '2rem' }}>Завантаження...</div>;
+    if (isAuthLoading) return <div style={{ textAlign: 'center', padding: '2rem' }}><Loader /></div>;
     if (!user) return null;
 
     const handleLogout = () => {
@@ -78,10 +79,15 @@ const ProfilePage: React.FC = () => {
                         </div>
                     </div>
                     
+                    <div className="profile-content">
                     {isLoading ? (
-                        <div style={{ textAlign: 'center', padding: '2rem' }}>Завантаження...</div>
+                        <div style={{ textAlign: 'center', padding: '2rem' }}>
+                            <Loader />
+                        </div>
                     ) : error ? (
-                        <div style={{ color: 'red', textAlign: 'center' }}>Помилка: {error}</div>
+                        <div style={{ textAlign: 'center', padding: '2rem', color: 'red' }}>
+                            {error}
+                        </div>
                     ) : (
                         <form className="profile-details" onSubmit={handleSave}>
                             <div className="form-group-row">
@@ -157,6 +163,7 @@ const ProfilePage: React.FC = () => {
                             Вийти з акаунта
                         </button>
                     </div>
+                </div>
                 </div>
             </div>
         </div>

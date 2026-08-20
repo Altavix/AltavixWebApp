@@ -60,8 +60,9 @@ export const OrderService = {
     checkout: async (payload: any) => {
         return $api.post(`/orders/checkout`, payload);
     },
-    updateOrderDetails: async (id: string, payload: any) => {
-        return $api.put(`/orders/${id}`, payload);
+    updateOrderDetails: async (id: string, payload: any, isAdmin?: boolean) => {
+        const url = isAdmin ? `/orders/admin/${id}` : `/orders/${id}`;
+        return $api.put(url, payload);
     },
     updateOrderStatus: async (id: string, newStatus: number) => {
         return $api.put(`/orders/${id}/status`, { newStatus });
@@ -96,16 +97,18 @@ export const CartService = {
         });
     },
 
-    async updateQuantity(orderId: string, orderItemId: string, newQuantity: number) {
-        return await $api.put(`/orderitems/update-quantity`, {
+    async updateQuantity(orderId: string, orderItemId: string, newQuantity: number, isAdmin?: boolean) {
+        const url = isAdmin ? `/orderitems/admin/update-quantity` : `/orderitems/update-quantity`;
+        return await $api.put(url, {
             orderId,
             orderItemId,
             newQuantity
         });
     },
 
-    async removeItem(orderId: string, orderItemId: string) {
-        return await $api.post(`/orderitems/remove`, {
+    async removeItem(orderId: string, orderItemId: string, isAdmin?: boolean) {
+        const url = isAdmin ? `/orderitems/admin/remove` : `/orderitems/remove`;
+        return await $api.post(url, {
             orderId,
             orderItemId
         });

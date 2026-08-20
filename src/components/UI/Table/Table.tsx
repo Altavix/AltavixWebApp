@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Loader from '../Loader';
 import MultiSelect from '../Select/MultiSelect';
 import Input from '../Input';
 import Button from '../Button';
@@ -150,7 +151,9 @@ export function Table<T>({
                     <tbody>
                         {isLoading ? (
                             <tr>
-                                <td colSpan={columns.length} style={{ textAlign: 'center', padding: '2rem' }}>Завантаження...</td>
+                                <td colSpan={columns.length} style={{ textAlign: 'center', padding: '2rem' }}>
+                                    <Loader />
+                                </td>
                             </tr>
                         ) : data.length === 0 ? (
                             <tr>
