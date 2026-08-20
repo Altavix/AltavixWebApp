@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { OrderService, CartService, type DeliveryMethodVm, type PaymentMethodVm } from '../../services/CartService';
 import Loader from '../UI/Loader';
 import OrderFormFields from '../Orders/OrderFormFields';
+import SearchModal from '../UI/SearchModal';
 import { formatDeliveryAddress } from '../../utils/orderUtils';
 import '../../styles/pages/Profile/OrderDetailsModal.css';
 
@@ -58,8 +59,11 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose 
     const [saving, setSaving] = useState(false);
     
     // Edit Form State
-    const [formData, setFormData] = useState<Partial<OrderDetails>>({});
+    const [formData, setFormData] = useState<Partial<OrderDetails & { clientId: string | null }>>({});
     const [novaPoshtaType, setNovaPoshtaType] = useState<"branch" | "postomat">("branch");
+    
+    // Search Modal State
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
     
     // Lists for dropdowns
     const [deliveryMethods, setDeliveryMethods] = useState<DeliveryMethodVm[]>([]);
@@ -147,6 +151,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose 
             const finalAddress = formatDeliveryAddress(formData.address || "", selectedDelivery, novaPoshtaType);
 
             const payload = {
+                clientId: formData.clientId,
                 clientName: formData.clientName,
                 clientMobilePhone: formData.clientMobilePhone,
                 clientEmail: formData.clientEmail,
@@ -239,6 +244,16 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose 
 
                             {isEditing ? (
                                 <div className="edit-form-wrapper" style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '-2.5rem', position: 'relative', zIndex: 10 }}>
+                                        <button 
+                                            type="button" 
+                                            className="btn-secondary" 
+                                            style={{ padding: '0.4rem 0.8rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                            onClick={() => setIsSearchOpen(true)}
+                                        >
+                                            <span style={{ fontSize: '1.1rem' }}>👤</span> Змінити клієнта
+                                        </button>
+                                    </div>
                                     <OrderFormFields 
                                         formData={formData as any}
                                         deliveryMethods={deliveryMethods}
@@ -248,6 +263,26 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose 
                                         onInputChange={handleInputChange}
                                         onSelectChange={handleSelectChange}
                                         showComment={true}
+                                    />
+                                    
+                                    <SearchModal 
+                                        isOpen={isSearchOpen}
+                                        onClose={() => setIsSearchOpen(false)}
+                                        apiMethod="/user/search"
+                                        title="Пошук клієнта"
+                                        mainField={(item) => `${item.lastName || ''} ${item.firstName || ''} ${item.middleName || ''}`.trim()}
+                                        subField1="phoneNumber"
+                                        subField2="email"
+                                        onSelect={(user) => {
+                                            const fullName = `${user.lastName || ''} ${user.firstName || ''} ${user.middleName || ''}`.trim();
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                clientId: user.id,
+                                                clientName: fullName,
+                                                clientMobilePhone: user.phoneNumber,
+                                                clientEmail: user.email
+                                            }));
+                                        }}
                                     />
                                 </div>
                             ) : (
