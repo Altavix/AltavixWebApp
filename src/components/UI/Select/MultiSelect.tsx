@@ -34,15 +34,16 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   }, []);
 
   const handleCheckboxChange = (key: string) => {
-    if (selectedValues.includes(key)) {
-      onChange(selectedValues.filter(v => v !== key));
+    const lowerKey = key.toLowerCase();
+    if (selectedValues.some(v => v.toLowerCase() === lowerKey)) {
+      onChange(selectedValues.filter(v => v.toLowerCase() !== lowerKey));
     } else {
       onChange([...selectedValues, key]);
     }
   };
 
   const selectedLabels = selectedValues
-    .map(val => options.find(o => o.key === val)?.value)
+    .map(val => options.find(o => o.key.toLowerCase() === val.toLowerCase())?.value)
     .filter(Boolean)
     .join(', ');
 
@@ -76,7 +77,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
               >
                 <input
                   type="checkbox"
-                  checked={selectedValues.includes(option.key)}
+                  checked={selectedValues.some(v => v.toLowerCase() === option.key.toLowerCase())}
                   onChange={() => handleCheckboxChange(option.key)}
                 />
                 <span>{option.value}</span>

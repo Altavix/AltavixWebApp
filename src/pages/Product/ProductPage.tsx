@@ -39,8 +39,16 @@ const ProductPage: React.FC = () => {
           CategoryService.getAll()
         ]);
 
-        if (productRes && productRes.data && productRes.data.data) {
-          setProduct(productRes.data.data);
+        if (productRes && productRes.data) {
+          // If the backend wraps it in ApiResponseDto, use .data
+          // Otherwise, the response itself is the product
+          const productData = 'data' in productRes.data ? productRes.data.data : productRes.data;
+          
+          if (productData) {
+            setProduct(productData as ProductVm);
+          } else {
+            setError("Product not found");
+          }
         } else {
           setError("Product not found");
         }
