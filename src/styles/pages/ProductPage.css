@@ -50,6 +50,7 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  min-width: 0;
 }
 
 .main-image-wrapper {
@@ -143,6 +144,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-width: 0;
 }
 
 .product-categories {
@@ -167,6 +169,8 @@
   color: var(--text-color, #2f3542);
   margin: 0;
   line-height: 1.2;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .product-price-large {
@@ -192,6 +196,9 @@
   line-height: 1.6;
   color: #57606f;
   white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .product-actions-large {
