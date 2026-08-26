@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { OrderService, CartService, type DeliveryMethodVm, type PaymentMethodVm } from '../../services/CartService';
 import Loader from '../UI/Loader';
 import Button from '../UI/Button';
@@ -64,7 +64,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose,
         if (wasUpdated && onOrderUpdated) {
             onOrderUpdated();
         }
-        onClose();
+        handleCloseModal();
     };
     const { user } = useAuth();
     const isAdmin = user?.role === 'Admin';
@@ -172,7 +172,6 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose,
         }
 
         if (res?.data?.messageType === 'success') {
-            setWasUpdated(true);
             await fetchOrderDetails();
             setIsEditing(false);
         }
@@ -181,28 +180,22 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose,
     });
 
     const [handleCancelOrder, isCanceling] = useFetching(async () => {
-        let res;
-        if (isAdmin) {
-            res = await OrderService.updateOrderStatus(orderId, 6);
-        } else {
-            res = await OrderService.cancelOrder(orderId);
+        const res = await OrderService.cancelOrder(orderId);
+        if (res?.data?.messageType === 'success') {
+            await fetchOrderDetails();
         }
-        setWasUpdated(true);
-        await fetchOrderDetails();
         return res;
     });
 
     const [handleItemQuantity, isUpdatingQty] = useFetching(async (itemId: string, newQty: number) => {
         if (newQty < 1) return;
         const res = await CartService.updateQuantity(orderId, itemId, newQty, isAdmin);
-        setWasUpdated(true);
         await fetchOrderDetails();
         return res;
     });
 
     const [handleRemoveItem, isRemovingItem] = useFetching(async (itemId: string) => {
         const res = await CartService.removeItem(orderId, itemId, isAdmin);
-        setWasUpdated(true);
         await fetchOrderDetails();
         return res;
     });
@@ -430,5 +423,4 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose,
 };
 
 export default OrderDetailsModal;
-
 

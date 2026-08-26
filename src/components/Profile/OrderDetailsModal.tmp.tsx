@@ -5,7 +5,6 @@ import Button from '../UI/Button';
 import Select from '../UI/Select/Select';
 import OrderFormFields from '../Orders/OrderFormFields';
 import SearchModal from '../UI/SearchModal';
-import ConfirmModal from '../UI/Modal/ConfirmModal';
 import { formatDeliveryAddress } from '../../utils/orderUtils';
 import '../../styles/pages/Profile/OrderDetailsModal.css';
 
@@ -41,11 +40,9 @@ interface OrderDetails {
 interface OrderDetailsModalProps {
     orderId: string;
     onClose: () => void;
-    onOrderUpdated?: () => void;
 }
 
 import { useAuth } from '../../hooks/useAuth';
-import { useFetching } from '../../hooks/useFetching';
 
 const statusMap: Record<number, { label: string; color: string }> = {
     0: { label: 'Кошик', color: '#aaaaaa' },
@@ -57,22 +54,16 @@ const statusMap: Record<number, { label: string; color: string }> = {
     6: { label: 'Скасовано', color: '#ff4444' }
 };
 
-const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose, onOrderUpdated }) => {
-    const [wasUpdated, setWasUpdated] = useState(false);
-
-    const handleCloseModal = () => {
-        if (wasUpdated && onOrderUpdated) {
-            onOrderUpdated();
-        }
-        onClose();
-    };
+const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose }) => {
     const { user } = useAuth();
     const isAdmin = user?.role === 'Admin';
 
     const [order, setOrder] = useState<OrderDetails | null>(null);
-    const [initialLoad, setInitialLoad] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
     const [isEditing, setIsEditing] = useState(false);
+    const [saving, setSaving] = useState(false);
     
     // Edit Form State
     const [formData, setFormData] = useState<Partial<OrderDetails & { clientId: string | null }>>({});
@@ -80,52 +71,63 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose,
     
     // Search Modal State
     const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
     
     // Lists for dropdowns
     const [deliveryMethods, setDeliveryMethods] = useState<DeliveryMethodVm[]>([]);
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethodVm[]>([]);
 
-    const [fetchOrderDetails, loading] = useFetching(async () => {
-        const response = await OrderService.getOrderById(orderId);
-        if (response?.data) {
-            setOrder(response.data);
-            
-            let cleanAddress = response.data.address || "";
-            if (cleanAddress.startsWith("Відділення №")) {
-                cleanAddress = cleanAddress.replace("Відділення №", "");
-                setNovaPoshtaType("branch");
-            } else if (cleanAddress.startsWith("Поштомат №")) {
-                cleanAddress = cleanAddress.replace("Поштомат №", "");
-                setNovaPoshtaType("postomat");
-            } else if (cleanAddress.startsWith("Відділення/Індекс: ")) {
-                cleanAddress = cleanAddress.replace("Відділення/Індекс: ", "");
+    const fetchOrderDetails = async () => {
+        try {
+            setLoading(true);
+            const response = await OrderService.getOrderById(orderId);
+            if (response.data) {
+                setOrder(response.data);
+                
+                // Initialize form data. Strip Nova Poshta prefixes if needed for clean editing
+                let cleanAddress = response.data.address || "";
+                if (cleanAddress.startsWith("Відділення №")) {
+                    cleanAddress = cleanAddress.replace("Відділення №", "");
+                    setNovaPoshtaType("branch");
+                } else if (cleanAddress.startsWith("Поштомат №")) {
+                    cleanAddress = cleanAddress.replace("Поштомат №", "");
+                    setNovaPoshtaType("postomat");
+                } else if (cleanAddress.startsWith("Відділення/Індекс: ")) {
+                    cleanAddress = cleanAddress.replace("Відділення/Індекс: ", "");
+                }
+                
+                setFormData({
+                    ...response.data,
+                    address: cleanAddress
+                });
+            } else {
+                setError('Не вдалося завантажити деталі замовлення.');
             }
-            
-            setFormData({
-                ...response.data,
-                address: cleanAddress
-            });
+        } catch (err) {
+            setError('Помилка сервера при завантаженні замовлення.');
+        } finally {
+            setLoading(false);
         }
-        setInitialLoad(false);
-        return response;
-    });
+    };
 
-    const [fetchMethods] = useFetching(async () => {
-        const [delRes, payRes] = await Promise.all([
-            OrderService.getDeliveryMethods(),
-            OrderService.getPaymentMethods()
-        ]);
-        if (delRes?.data) setDeliveryMethods(delRes.data);
-        if (payRes?.data) setPaymentMethods(payRes.data);
-        return { data: { messageType: 'success' } };
-    });
+    const fetchMethods = async () => {
+        try {
+            const [delRes, payRes] = await Promise.all([
+                OrderService.getDeliveryMethods(),
+                OrderService.getPaymentMethods()
+            ]);
+            if (delRes.data) setDeliveryMethods(delRes.data);
+            if (payRes.data) setPaymentMethods(payRes.data);
+        } catch (err) {
+            console.error('Failed to load methods', err);
+        }
+    };
 
     useEffect(() => {
         fetchOrderDetails();
         fetchMethods();
     }, [orderId]);
 
+    // Prevent scrolling on body when modal is open
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {
@@ -135,7 +137,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose,
 
     const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
-            handleCloseModal();
+            onClose();
         }
     };
 
@@ -148,64 +150,78 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose,
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const [handleSave, saving] = useFetching(async () => {
+    const handleSave = async () => {
         if (!order) return;
-        const selectedDelivery = deliveryMethods.find(m => m.id === formData.deliveryMethodId);
-        const finalAddress = formatDeliveryAddress(formData.address || "", selectedDelivery, novaPoshtaType);
+        setSaving(true);
+        try {
+            const selectedDelivery = deliveryMethods.find(m => m.id === formData.deliveryMethodId);
+            const finalAddress = formatDeliveryAddress(formData.address || "", selectedDelivery, novaPoshtaType);
 
-        const payload = {
-            clientId: formData.clientId,
-            clientName: formData.clientName,
-            clientMobilePhone: formData.clientMobilePhone,
-            clientEmail: formData.clientEmail,
-            city: formData.city,
-            address: finalAddress,
-            comment: formData.comment,
-            deliveryMethodId: formData.deliveryMethodId,
-            paymentMethodId: formData.paymentMethodId
-        };
-        
-        const res = await OrderService.updateOrderDetails(orderId, payload, isAdmin);
-        
-        if (isAdmin && formData.status !== undefined && Number(formData.status) !== order.status) {
-            await OrderService.updateOrderStatus(orderId, Number(formData.status));
+            const payload = {
+                clientId: formData.clientId,
+                clientName: formData.clientName,
+                clientMobilePhone: formData.clientMobilePhone,
+                clientEmail: formData.clientEmail,
+                city: formData.city,
+                address: finalAddress,
+                comment: formData.comment,
+                deliveryMethodId: formData.deliveryMethodId,
+                paymentMethodId: formData.paymentMethodId
+            };
+            
+            const res = await OrderService.updateOrderDetails(orderId, payload, isAdmin);
+            let statusRes = { messageType: 'success' };
+            
+            if (isAdmin && formData.status !== undefined && Number(formData.status) !== order.status) {
+                statusRes = await OrderService.updateOrderStatus(orderId, Number(formData.status)) as any;
+            }
+
+            if (res.messageType === 'success' && (statusRes?.messageType === 'success' || statusRes?.messageType === undefined)) {
+                await fetchOrderDetails(); // Refresh
+                setIsEditing(false);
+            } else {
+                alert(res.message || 'Помилка при збереженні');
+            }
+        } catch (err) {
+            alert('Помилка сервера');
+        } finally {
+            setSaving(false);
         }
+    };
 
-        if (res?.data?.messageType === 'success') {
-            setWasUpdated(true);
-            await fetchOrderDetails();
-            setIsEditing(false);
+    const handleCancelOrder = async () => {
+        if (window.confirm('Ви впевнені, що хочете скасувати це замовлення?')) {
+            try {
+                const res = await OrderService.cancelOrder(orderId);
+                if (res.messageType === 'success') {
+                    fetchOrderDetails();
+                } else {
+                    alert(res.message || 'Помилка при скасуванні');
+                }
+            } catch (err) {
+                alert('Помилка сервера');
+            }
         }
-        
-        return res;
-    });
+    };
 
-    const [handleCancelOrder, isCanceling] = useFetching(async () => {
-        let res;
-        if (isAdmin) {
-            res = await OrderService.updateOrderStatus(orderId, 6);
-        } else {
-            res = await OrderService.cancelOrder(orderId);
-        }
-        setWasUpdated(true);
-        await fetchOrderDetails();
-        return res;
-    });
-
-    const [handleItemQuantity, isUpdatingQty] = useFetching(async (itemId: string, newQty: number) => {
+    const handleItemQuantity = async (itemId: string, newQty: number) => {
         if (newQty < 1) return;
-        const res = await CartService.updateQuantity(orderId, itemId, newQty, isAdmin);
-        setWasUpdated(true);
-        await fetchOrderDetails();
-        return res;
-    });
+        try {
+            await CartService.updateQuantity(orderId, itemId, newQty, isAdmin);
+            fetchOrderDetails();
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
-    const [handleRemoveItem, isRemovingItem] = useFetching(async (itemId: string) => {
-        const res = await CartService.removeItem(orderId, itemId, isAdmin);
-        setWasUpdated(true);
-        await fetchOrderDetails();
-        return res;
-    });
+    const handleRemoveItem = async (itemId: string) => {
+        try {
+            await CartService.removeItem(orderId, itemId, isAdmin);
+            fetchOrderDetails();
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const canEdit = order && (isAdmin ? order.status <= 2 : order.status <= 1);
 
@@ -214,15 +230,15 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose,
             <div className="modal-content">
                 <div className="modal-header">
                     <h2>Деталі замовлення</h2>
-                    <button className="close-btn" onClick={handleCloseModal}>&times;</button>
+                    <button className="close-btn" onClick={onClose}>&times;</button>
                 </div>
                 
                 <div className="modal-body">
-                    {initialLoad || (loading && !order) ? (
+                    {loading ? (
                         <Loader />
-                    ) : !order ? (
-                        <div className="error-msg">Не вдалося завантажити деталі замовлення.</div>
-                    ) : (
+                    ) : error ? (
+                        <div className="error-msg">{error}</div>
+                    ) : order ? (
                         <div className="order-details-view">
                             <div className="details-header">
                                 <div>
@@ -263,24 +279,22 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose,
 
                             {isEditing ? (
                                 <div className="edit-form-wrapper" style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
-                                    {isAdmin && (
-                                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '-2.5rem', position: 'relative', zIndex: 10 }}>
-                                            <Button 
-                                                type="button" 
-                                                variant="secondary"
-                                                style={{ padding: '0.4rem 0.8rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                                                onClick={() => setIsSearchOpen(true)}
-                                            >
-                                                <span style={{ fontSize: '1.1rem' }}>🔄 </span> Змінити клієнта
-                                            </Button>
-                                        </div>
-                                    )}
+                                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '-2.5rem', position: 'relative', zIndex: 10 }}>
+                                        <Button 
+                                            type="button" 
+                                            variant="secondary"
+                                            style={{ padding: '0.4rem 0.8rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                            onClick={() => setIsSearchOpen(true)}
+                                        >
+                                            <span style={{ fontSize: '1.1rem' }}>🔄 </span> Змінити клієнта
+                                        </Button>
+                                    </div>
                                     <OrderFormFields 
                                         formData={formData as any}
                                         deliveryMethods={deliveryMethods}
                                         paymentMethods={paymentMethods}
-                                        novaPoshtaType={novaPoshtaType as any}
-                                        setNovaPoshtaType={setNovaPoshtaType as any}
+                                        novaPoshtaType={novaPoshtaType}
+                                        setNovaPoshtaType={setNovaPoshtaType}
                                         onInputChange={handleInputChange}
                                         onSelectChange={handleSelectChange}
                                         showComment={true}
@@ -354,9 +368,9 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose,
                                                     <td className="text-center">
                                                         {isEditing ? (
                                                             <div className="qty-controls">
-                                                                <button disabled={isUpdatingQty} onClick={() => handleItemQuantity(item.id, item.quantity - 1)}>-</button>
+                                                                <button onClick={() => handleItemQuantity(item.id, item.quantity - 1)}>-</button>
                                                                 <span>{item.quantity}</span>
-                                                                <button disabled={isUpdatingQty} onClick={() => handleItemQuantity(item.id, item.quantity + 1)}>+</button>
+                                                                <button onClick={() => handleItemQuantity(item.id, item.quantity + 1)}>+</button>
                                                             </div>
                                                         ) : (
                                                             `${item.quantity} шт.`
@@ -366,9 +380,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose,
                                                     <td className="text-right">{(item.unitPrice * item.quantity).toFixed(2)} ₴</td>
                                                     {isEditing && (
                                                         <td className="text-center">
-                                                            <button disabled={isRemovingItem} className="btn-remove-item" onClick={() => handleRemoveItem(item.id)}>
-                                                                {isRemovingItem ? '...' : '🗑️'}
-                                                            </button>
+                                                            <button className="btn-remove-item" onClick={() => handleRemoveItem(item.id)}>🗑️</button>
                                                         </td>
                                                     )}
                                                 </tr>
@@ -387,9 +399,8 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose,
                                 <div className="actions-left">
                                     <Button 
                                         variant="danger"
-                                        onClick={canEdit && order.status !== 6 ? () => setIsCancelConfirmOpen(true) : undefined}
-                                        disabled={!canEdit || order.status === 6 || isCanceling}
-                                        isLoading={isCanceling}
+                                        onClick={canEdit && order.status !== 6 ? handleCancelOrder : undefined}
+                                        disabled={!canEdit || order.status === 6}
                                     >
                                         Скасувати замовлення
                                     </Button>
@@ -411,24 +422,11 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose,
                                 </div>
                             </div>
                         </div>
-                    )}
+                    ) : null}
                 </div>
             </div>
-            
-            <ConfirmModal
-                isOpen={isCancelConfirmOpen}
-                onClose={() => setIsCancelConfirmOpen(false)}
-                title="Скасування замовлення"
-                message="Ви дійсно впевнені, що хочете скасувати це замовлення? Цю дію неможливо відмінити."
-                onConfirm={handleCancelOrder}
-                confirmText="Скасувати замовлення"
-                cancelText="Ні, повернутися"
-                isDestructive={true}
-            />
         </div>
     );
 };
 
 export default OrderDetailsModal;
-
-

@@ -68,7 +68,7 @@ export const OrderService = {
         return $api.put(`/orders/${id}/status`, { newStatus });
     },
     cancelOrder: async (id: string) => {
-        return $api.post(`/orders/${id}/cancel`);
+        return $api.post(`/orders/${id}/cancel`, {});
     },
     getDeliveryMethods: async () => {
         return $api.get(`/deliverymethods/active`);

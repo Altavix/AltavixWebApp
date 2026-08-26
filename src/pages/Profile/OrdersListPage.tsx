@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { OrderService } from '../../services/CartService';
@@ -11,31 +11,32 @@ interface OrderSummary {
     id: string;
     number: number;
     created: string;
-    updated?: string;
-    ordered?: string;
-    paid?: string;
-    processing?: string;
-    shipped?: string;
-    delivered?: string;
-    cancelled?: string;
-    status: number;
+    updated: string | null;
+    ordered: string | null;
+    paid: string | null;
+    processing: string | null;
+    shipped: string | null;
+    delivered: string | null;
+    cancelled: string | null;
     clientName: string;
-    city?: string;
-    address?: string;
-    paymentMethodTitle?: string;
+    city: string | null;
+    address: string | null;
+    paymentMethodTitle: string | null;
+    deliveryMethodTitle: string | null;
     totalPrice: number;
     totalPriceCoin: number;
     totalQuantity: number;
+    status: number;
 }
 
 const statusMap: Record<number, { label: string; color: string }> = {
-    0: { label: 'Нове / Кошик', color: '#6b7280' },
-    1: { label: 'Оформлено', color: '#3b82f6' },
-    2: { label: 'В обробці', color: '#f59e0b' },
+    0: { label: 'Кошик', color: '#aaaaaa' },
+    1: { label: 'Нове', color: '#aa66cc' },
+    2: { label: 'В обробці', color: '#ffbb33' },
     3: { label: 'Оплачено', color: '#10b981' },
-    4: { label: 'Відправлено', color: '#8b5cf6' },
-    5: { label: 'Доставлено', color: '#059669' },
-    6: { label: 'Скасовано', color: '#ef4444' }
+    4: { label: 'Відправлено', color: '#33b5e5' },
+    5: { label: 'Доставлено', color: '#00C851' },
+    6: { label: 'Скасовано', color: '#ff4444' }
 };
 
 const getStatusDate = (order: OrderSummary) => {
@@ -49,7 +50,7 @@ const getStatusDate = (order: OrderSummary) => {
 };
 
 const OrdersListPage: React.FC = () => {
-    const { user } = useAuth();
+    const { user, isLoading: isAuthLoading } = useAuth();
     const navigate = useNavigate();
     const [orders, setOrders] = useState<OrderSummary[]>([]);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
@@ -59,22 +60,25 @@ const OrdersListPage: React.FC = () => {
         return res;
     });
 
+    const loadData = async () => {
+        if (!user) return;
+        const res = await fetchOrders(user.id);
+        if (res.messageType === 'success' && res.data?.orders) {
+            setOrders(res.data.orders);
+        }
+    };
+
     useEffect(() => {
+        if (isAuthLoading) return;
         if (!user) {
             navigate('/login');
             return;
         }
 
-        const loadData = async () => {
-            const res = await fetchOrders(user.id);
-            if (res.messageType === 'success' && res.data?.orders) {
-                setOrders(res.data.orders);
-            }
-        };
-
         loadData();
-    }, [user, navigate]);
+    }, [user, isAuthLoading, navigate]);
 
+    if (isAuthLoading) return <Loader />;
     if (!user) return null;
 
     // Filter cart and past orders
@@ -97,25 +101,25 @@ const OrdersListPage: React.FC = () => {
                         {hasActiveCart && (
                             <div className="order-row cart-row" onClick={() => setSelectedOrderId(cartOrder.id)} style={{ cursor: 'pointer' }}>
                                 <div className="order-col col-number">
-                                    <span className="col-label">Замовлення</span>
+                                    <span className="col-label">ЗАМОВЛЕННЯ</span>
                                     <strong>№{cartOrder.number}</strong>
                                 </div>
                                 <div className="order-col col-qty">
-                                    <span className="col-label">Кількість</span>
+                                    <span className="col-label">КІЛЬКІСТЬ</span>
                                     <span>{cartOrder.totalQuantity} шт.</span>
                                 </div>
                                 <div className="order-col col-status">
-                                    <span className="col-label">Статус</span>
+                                    <span className="col-label">СТАТУС</span>
                                     <span className="status-badge" style={{ backgroundColor: `${statusMap[0].color}15`, color: statusMap[0].color }}>
                                         🛒 Кошик
                                     </span>
                                 </div>
                                 <div className="order-col col-date">
-                                    <span className="col-label">Створено</span>
+                                    <span className="col-label">СТВОРЕНО</span>
                                     <span>{new Date(cartOrder.created).toLocaleDateString('uk-UA')}</span>
                                 </div>
                                 <div className="order-col col-price">
-                                    <span className="col-label">Сума</span>
+                                    <span className="col-label">СУМА</span>
                                     <strong>{cartOrder.totalPrice.toFixed(2)} ₴</strong>
                                 </div>
                                 <div className="order-col col-action">
@@ -126,7 +130,7 @@ const OrdersListPage: React.FC = () => {
                                             navigate('/checkout');
                                         }}
                                     >
-                                        Замовити
+                                        Оформити
                                     </button>
                                 </div>
                             </div>
@@ -146,27 +150,27 @@ const OrdersListPage: React.FC = () => {
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <div className="order-col col-number">
-                                        <span className="col-label">Замовлення</span>
+                                        <span className="col-label">ЗАМОВЛЕННЯ</span>
                                         <strong>№{order.number}</strong>
                                     </div>
                                     <div className="order-col col-qty">
-                                        <span className="col-label">Кількість</span>
+                                        <span className="col-label">КІЛЬКІСТЬ</span>
                                         <span>{order.totalQuantity} шт.</span>
                                     </div>
                                     <div className="order-col col-status">
-                                        <span className="col-label">Статус</span>
+                                        <span className="col-label">СТАТУС</span>
                                         <span className="status-badge" style={{ backgroundColor: `${statusMap[order.status].color}15`, color: statusMap[order.status].color }}>
                                             {statusMap[order.status].label}
                                         </span>
                                         <span className="status-date">{getStatusDate(order)}</span>
                                     </div>
                                     <div className="order-col col-address">
-                                        <span className="col-label">Адреса та Оплата</span>
+                                        <span className="col-label">АДРЕСА ТА ОПЛАТА</span>
                                         <span className="address-text">{order.city ? `${order.city}, ${order.address}` : order.address || '—'}</span>
                                         <span className="payment-text">{order.paymentMethodTitle || '—'}</span>
                                     </div>
                                     <div className="order-col col-price">
-                                        <span className="col-label">Сума</span>
+                                        <span className="col-label">СУМА</span>
                                         <strong>{order.totalPrice.toFixed(2)} ₴</strong>
                                     </div>
                                 </div>
@@ -180,6 +184,7 @@ const OrdersListPage: React.FC = () => {
                 <OrderDetailsModal 
                     orderId={selectedOrderId} 
                     onClose={() => setSelectedOrderId(null)} 
+                    onOrderUpdated={loadData}
                 />
             )}
         </div>

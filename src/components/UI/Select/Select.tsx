@@ -8,6 +8,8 @@ interface SelectProps {
   onChange: (selected: string) => void;
   placeholder?: string;
   label?: string;
+  renderOption?: (option: KeyValue) => React.ReactNode;
+  renderValue?: (option: KeyValue) => React.ReactNode;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -15,7 +17,9 @@ const Select: React.FC<SelectProps> = ({
   selectedValue,
   onChange,
   placeholder = 'Виберіть варіант...',
-  label
+  label,
+  renderOption,
+  renderValue
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -38,7 +42,7 @@ const Select: React.FC<SelectProps> = ({
     setIsOpen(false);
   };
 
-  const selectedLabel = options.find(o => o.key === selectedValue)?.value;
+  const selectedOption = options.find(o => o.key === selectedValue);
 
   return (
     <div className={`input-group ${selectedValue ? 'has-value' : ''}`} ref={containerRef}>
@@ -47,7 +51,7 @@ const Select: React.FC<SelectProps> = ({
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="select-text">
-          {selectedLabel || (!label && <span className="select-placeholder">{placeholder}</span>)}
+          {selectedOption ? (renderValue ? renderValue(selectedOption) : selectedOption.value) : (!label && <span className="select-placeholder">{placeholder}</span>)}
         </div>
         <div className="select-arrow">
           <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -68,7 +72,7 @@ const Select: React.FC<SelectProps> = ({
                 className={`select-option ${selectedValue === option.key ? 'selected' : ''}`}
                 onClick={() => handleOptionClick(option.key)}
               >
-                <span>{option.value}</span>
+                {renderOption ? renderOption(option) : <span>{option.value}</span>}
               </div>
             ))
           )}

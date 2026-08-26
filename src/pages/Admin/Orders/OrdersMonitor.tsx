@@ -232,10 +232,8 @@ const OrdersMonitor: React.FC = () => {
             {selectedOrderId && (
                 <OrderDetailsModal 
                     orderId={selectedOrderId} 
-                    onClose={() => {
-                        setSelectedOrderId(null);
-                        fetchOrders(); // refresh after edit
-                    }} 
+                    onClose={() => setSelectedOrderId(null)} 
+                    onOrderUpdated={fetchOrders}
                 />
             )}
 
@@ -268,3 +266,4 @@ const OrdersMonitor: React.FC = () => {
 };
 
 export default OrdersMonitor;
+
