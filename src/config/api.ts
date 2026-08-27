@@ -6,6 +6,8 @@ export const API_ENDPOINTS = {
   AUTH: `${API_BASE_URL}/Auth`,
   PRODUCT: `${API_BASE_URL}/Product`,
   CATEGORY: `${API_BASE_URL}/Category`,
+  BRANDS: `${API_BASE_URL}/Brands`,
+  CHARACTERISTICS: `${API_BASE_URL}/Characteristics`
 };
 
 export const $api = axios.create({

@@ -30,6 +30,8 @@ export interface TableProps<T> {
     onSortChange: (column: string, direction: 'asc' | 'desc') => void;
     onFilterChange: (filters: Record<string, string>) => void;
     onRowClick?: (item: T) => void;
+    onAdd?: () => void;
+    addText?: string;
 }
 
 export function Table<T>({
@@ -45,7 +47,9 @@ export function Table<T>({
     onPageChange,
     onSortChange,
     onFilterChange,
-    onRowClick
+    onRowClick,
+    onAdd,
+    addText = 'Додати'
 }: TableProps<T>) {
     const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -71,8 +75,8 @@ export function Table<T>({
 
     return (
         <div className="table-container">
-            <div className="table-header-actions">
-                <form className="table-filters" onSubmit={handleFilterSubmit}>
+            <div className="table-header-actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <form className="table-filters" onSubmit={handleFilterSubmit} style={{ flex: 1 }}>
                     {columns.filter(c => c.filterable).map(col => {
                         const type = col.filterType || (col.filterOptions ? 'select' : 'text');
                         
@@ -128,6 +132,13 @@ export function Table<T>({
                         </div>
                     )}
                 </form>
+                {onAdd && (
+                    <div className="table-add-action" style={{ marginLeft: '1rem' }}>
+                        <Button variant="primary" onClick={onAdd} className="btn-sm">
+                            <span style={{ marginRight: '0.5rem' }}>+</span> {addText}
+                        </Button>
+                    </div>
+                )}
             </div>
 
             <div className="table-responsive">

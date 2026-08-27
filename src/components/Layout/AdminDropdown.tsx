@@ -41,6 +41,12 @@ const AdminDropdown: React.FC = () => {
                     <Link to="/admin/products" className="dropdown-item" onClick={closeDropdown}>
                         <span className="icon">📦</span> Товари
                     </Link>
+                    <Link to="/admin/brands" className="dropdown-item" onClick={closeDropdown}>
+                        <span className="icon">🏷️</span> Бренди
+                    </Link>
+                    <Link to="/admin/characteristics" className="dropdown-item" onClick={closeDropdown}>
+                        <span className="icon">📋</span> Характеристики
+                    </Link>
                     <Link to="/admin/categories" className="dropdown-item" onClick={closeDropdown}>
                         <span className="icon">📑</span> Категорії
                     </Link>

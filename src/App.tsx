@@ -10,6 +10,8 @@ import CheckoutPage from './pages/Checkout/CheckoutPage'
 import ProfilePage from './pages/Profile/ProfilePage'
 import OrdersListPage from './pages/Profile/OrdersListPage'
 import OrdersMonitor from './pages/Admin/Orders/OrdersMonitor'
+import BrandsAdmin from './pages/Admin/Brands/BrandsAdmin'
+import CharacteristicsAdmin from './pages/Admin/Characteristics/CharacteristicsAdmin'
 import Toast from './components/UI/Toast'
 import './styles/index.css'
 
@@ -31,6 +33,8 @@ function App() {
           
           {/* Admin Routes inside standard layout */}
           <Route path="/admin/orders" element={<OrdersMonitor />} />
+          <Route path="/admin/brands" element={<BrandsAdmin />} />
+          <Route path="/admin/characteristics" element={<CharacteristicsAdmin />} />
         </Route>
       </Routes>
       <Toast />
