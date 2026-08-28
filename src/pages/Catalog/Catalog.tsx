@@ -74,9 +74,9 @@ const Catalog: React.FC = () => {
   const [submitForm, isSubmitting] = useFetching(async (data: ProductFormData) => {
     if (productToEdit) {
       const updateData = { id: productToEdit.id, ...data };
-      await ProductService.updateProduct(updateData);
+      return await ProductService.updateProduct(updateData);
     } else {
-      await ProductService.createProduct(data);
+      return await ProductService.createProduct(data);
     }
   });
 

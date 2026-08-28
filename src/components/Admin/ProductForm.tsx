@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import type { ProductVm, ProductCharacteristicDto } from '../../types/product';
-import type { CategoryDto } from '../../types/category';
 import CategoryService from '../../services/CategoryService';
 import CharacteristicService from '../../services/CharacteristicService';
 import type { CharacteristicDto } from '../../types/characteristic';
+import BrandService from '../../services/BrandService';
+import type { BrandDto } from '../../types/brand';
 import Input from '../UI/Input';
 import Button from '../UI/Button';
 import ImageUploader from '../UI/ImageUploader/ImageUploader';
@@ -56,6 +57,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
   const [categories, setCategories] = useState<{key: string, value: string}[]>([]);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
+  const [brandId, setBrandId] = useState<string>(initialData?.brandId || '');
+  const [brands, setBrands] = useState<BrandDto[]>([]);
+
   // Characteristic addition state
   const [availableCharacteristics, setAvailableCharacteristics] = useState<CharacteristicDto[]>([]);
   const [selectedCharId, setSelectedCharId] = useState<string>('');
@@ -83,12 +87,13 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
       let chars: CharacteristicDto[] = [];
       
       if (response?.data) {
-        if (Array.isArray(response.data)) {
-          chars = response.data;
-        } else if (response.data.characteristics) {
-          chars = response.data.characteristics;
-        } else if ((response as any)?.data?.data?.characteristics) {
-          chars = (response as any).data.data.characteristics;
+        const d = response.data as any;
+        if (Array.isArray(d)) {
+          chars = d;
+        } else if (d.characteristics) {
+          chars = d.characteristics;
+        } else if (d?.data?.characteristics) {
+          chars = d.data.characteristics;
         }
       } else if ((response as any)?.characteristics) {
         chars = (response as any).characteristics;
@@ -102,9 +107,28 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
     }
   };
 
+  const fetchBrands = async () => {
+    try {
+      const response = await BrandService.getAll(true);
+      if (response?.data) {
+        const d = response.data as any;
+        if (Array.isArray(d)) {
+          setBrands(d.filter((b: any) => b.enabled));
+        } else if (d.brands) {
+          setBrands(d.brands.filter((b: any) => b.enabled));
+        } else if (d?.data?.brands) {
+          setBrands(d.data.brands.filter((b: any) => b.enabled));
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch brands", error);
+    }
+  };
+
   useEffect(() => {
     fetchCategories();
     loadCharacteristics();
+    fetchBrands();
   }, []);
 
   const handleImagesChange = (newImagesBase64: string[]) => {
@@ -125,6 +149,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
       images: images,
       inStock,
       enabled,
+      brandId: brandId || undefined,
       characteristics: productCharacteristics
     });
   };
@@ -239,6 +264,22 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
             </div>
 
             <div className="input-group" style={{ marginTop: '1.5rem' }}>
+              <label className="input-label">Бренд</label>
+              <select
+                className="input-field"
+                value={brandId}
+                onChange={(e) => setBrandId(e.target.value)}
+              >
+                <option value="">-- Оберіть бренд (необов'язково) --</option>
+                {brands.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="input-group" style={{ marginTop: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <label className="input-label" style={{ marginBottom: 0 }}>Категорії</label>
                 <button 
@@ -333,7 +374,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {productCharacteristics.map((pc, i) => (
+                    {productCharacteristics.map((pc) => (
                       <tr key={pc.characteristicId}>
                         <td>{pc.name}</td>
                         <td>{pc.value}</td>
