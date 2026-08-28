@@ -26,6 +26,7 @@ const ProductPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -151,6 +152,10 @@ const ProductPage: React.FC = () => {
             ))}
           </div>
 
+          {product.brandName && (
+            <div className="product-brand-large">{product.brandName}</div>
+          )}
+
           <h1 className="product-title-large">{product.title}</h1>
           <div className="product-price-large">{priceDisplay}</div>
 
@@ -158,6 +163,30 @@ const ProductPage: React.FC = () => {
             <h3>Опис товару</h3>
             <p className="product-description-text">{product.description}</p>
           </div>
+
+          {product.characteristics && product.characteristics.length > 0 && (
+            <div className="product-characteristics-container">
+              <h3>Характеристики</h3>
+              <table className="characteristics-table-public">
+                <tbody>
+                  {(isExpanded ? product.characteristics : product.characteristics.slice(0, 4)).map((char, index) => (
+                    <tr key={index}>
+                      <td className="char-name">{char.name}</td>
+                      <td className="char-value">{char.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {product.characteristics.length > 4 && (
+                <button 
+                  className="btn-show-more" 
+                  onClick={() => setIsExpanded(!isExpanded)}
+                >
+                  {isExpanded ? 'Менше' : 'Ще'}
+                </button>
+              )}
+            </div>
+          )}
 
           <div className="product-actions-large">
             <button className="btn-add-to-cart" onClick={() => addToCart(product.id, 1)}>

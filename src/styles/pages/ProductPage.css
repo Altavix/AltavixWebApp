@@ -268,3 +268,97 @@
     font-size: 2rem;
   }
 }
+
+/* Brand Typography */
+.product-brand-large {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-light, #747d8c);
+  margin-top: 0.5rem;
+  margin-bottom: -0.5rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Characteristics Table (Modern Photo Style) */
+.product-characteristics-container {
+  margin-bottom: 2rem;
+}
+
+.product-characteristics-container h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: 1rem;
+}
+
+.characteristics-table-public {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.characteristics-table-public tr:nth-child(odd) {
+  background-color: #f7f7f9;
+}
+
+.characteristics-table-public tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+.characteristics-table-public td {
+  padding: 0.85rem 1.2rem;
+  font-size: 0.95rem;
+  vertical-align: top;
+}
+
+.characteristics-table-public .char-name {
+  width: 40%;
+  font-weight: 400;
+  color: #747d8c;
+}
+
+.characteristics-table-public .char-value {
+  width: 60%;
+  font-weight: 500;
+  color: #2f3542;
+  line-height: 1.4;
+  /* Trick to align short text to right, but keep long text left-aligned */
+  display: flex;
+  justify-content: flex-end;
+  text-align: left;
+}
+
+.btn-show-more {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 1rem 0;
+  transition: color 0.2s;
+}
+
+.btn-show-more::before,
+.btn-show-more::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #dfe4ea;
+}
+
+.btn-show-more::before {
+  margin-right: 1rem;
+}
+
+.btn-show-more::after {
+  margin-left: 1rem;
+}
+
+.btn-show-more:hover {
+  color: var(--color-primary-dark);
+}

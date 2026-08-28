@@ -92,6 +92,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, isAdmin = false, onD
         </div>
       </div>
       <div className="product-info">
+        {product.brandName && (
+          <div className="product-brand">{product.brandName}</div>
+        )}
         <h3 className="product-title">{product.title}</h3>
         <p className="product-description">{product.description}</p>
         <div className="product-footer">

@@ -78,6 +78,15 @@
   flex-grow: 1;
 }
 
+.product-brand {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
 .product-title {
   font-size: 1.1rem;
   font-weight: 600;
