@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { CharacteristicDto } from '../../../types/characteristic';
+import type { CharacteristicDto } from '../../types/characteristic';
 import Button from '../UI/Button';
 import Input from '../UI/Input';
 

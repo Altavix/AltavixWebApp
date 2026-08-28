@@ -44,7 +44,7 @@ const FormModal: React.FC<FormModalProps> = ({
   );
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title} footer={footer} maxWidth="600px">
+    <Modal isOpen={isOpen} onClose={onClose} title={title} footer={footer}>
       {children}
     </Modal>
   );

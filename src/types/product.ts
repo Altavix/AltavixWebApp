@@ -1,3 +1,9 @@
+export interface ProductCharacteristicDto {
+  characteristicId: string;
+  name: string;
+  value: string;
+}
+
 export interface ProductVm {
   id: string;
   title: string;
@@ -6,6 +12,11 @@ export interface ProductVm {
   priceCoin: number;
   categoryIds: string[];
   images: string[];
+  brandId?: string;
+  brandName?: string;
+  inStock: boolean;
+  enabled: boolean;
+  characteristics: ProductCharacteristicDto[];
 }
 
 export interface PaginatedList<T> {

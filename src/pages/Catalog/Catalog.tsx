@@ -166,7 +166,7 @@ const Catalog: React.FC = () => {
         <FormModal 
           isOpen={isFormOpen}
           onClose={() => setIsFormOpen(false)}
-          title={productToEdit ? 'Редагувати товар' : 'Створити новий товар'}
+          title={productToEdit ? "Редагувати товар" : "Створити новий товар"}
           buttons={[
             {
               label: 'Скасувати',

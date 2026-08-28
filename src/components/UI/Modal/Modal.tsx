@@ -8,10 +8,9 @@ export interface ModalProps {
   title?: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
-  maxWidth?: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, footer, maxWidth = '500px' }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, footer }) => {
   // Prevent scrolling when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -39,7 +38,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, footer,
     <div className="modal-overlay" onClick={onClose}>
       <div 
         className="modal-content" 
-        style={{ maxWidth }} 
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
       >
         <div className="modal-header">

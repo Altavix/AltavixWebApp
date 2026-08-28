@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { BrandDto } from '../../../types/brand';
+import type { BrandDto } from '../../types/brand';
 import Button from '../UI/Button';
 import Input from '../UI/Input';
 
