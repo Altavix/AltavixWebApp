@@ -21,7 +21,7 @@ export interface ProductFormData {
   price: number;
   priceCoin: number;
   categoryIds: string[];
-  images: string[];
+  images?: string[];
   inStock: boolean;
   enabled: boolean;
   brandId?: string;
@@ -52,6 +52,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
   const [enabled, setEnabled] = useState<boolean>(initialData?.enabled ?? true);
   
   const [images, setImages] = useState<string[]>((initialData?.images || []).map(ensureBase64Prefix));
+  const [imagesModified, setImagesModified] = useState(false);
   const [productCharacteristics, setProductCharacteristics] = useState<ProductCharacteristicDto[]>(initialData?.characteristics || []);
   
   const [categories, setCategories] = useState<{key: string, value: string}[]>([]);
@@ -133,10 +134,12 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
 
   const handleImagesChange = (newImagesBase64: string[]) => {
     setImages(prev => [...prev, ...newImagesBase64]);
+    setImagesModified(true);
   };
 
   const handleRemoveImage = (indexToRemove: number) => {
     setImages(prev => prev.filter((_, index) => index !== indexToRemove));
+    setImagesModified(true);
   };
 
   const handleSubmit = () => {
@@ -146,7 +149,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
       price: parseInt(price) || 0,
       priceCoin: parseInt(priceCoin) || 0,
       categoryIds: selectedCategories,
-      images: images,
+      images: imagesModified ? images : undefined,
       inStock,
       enabled,
       brandId: brandId || undefined,

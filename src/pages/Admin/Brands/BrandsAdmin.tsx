@@ -23,8 +23,8 @@ const BrandsAdmin: React.FC = () => {
 
     const loadBrands = async () => {
         const response = await fetchBrands();
-        if (response && response.messageType !== 'error' && response.data?.brands) {
-            setBrands(response.data.brands);
+        if (response && response.messageType !== 'error' && response.data?.data?.brands) {
+            setBrands(response.data.data.brands);
         }
     };
 

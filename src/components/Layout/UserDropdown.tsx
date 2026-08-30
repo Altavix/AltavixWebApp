@@ -30,8 +30,8 @@ const UserDropdown: React.FC = () => {
     return (
         <div className="user-dropdown-container" ref={dropdownRef}>
             <button className="user-dropdown-btn" onClick={toggleDropdown}>
-                <span className="user-name">{user.name || user.username}</span>
-                <span className="dropdown-arrow">▼</span>
+                <span className="user-name">{user.name || user.email}</span>
+                <span className="dropdown-arrow">-</span>
             </button>
             
             {isOpen && (

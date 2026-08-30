@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-export const API_BASE_URL = 'https://localhost:7248/api';
+export const API_BASE_URL = '/api';
 
 export const API_ENDPOINTS = {
-  AUTH: `${API_BASE_URL}/Auth`,
-  PRODUCT: `${API_BASE_URL}/Product`,
-  CATEGORY: `${API_BASE_URL}/Category`,
-  BRANDS: `${API_BASE_URL}/Brands`,
-  CHARACTERISTICS: `${API_BASE_URL}/Characteristics`
+  AUTH: `/Auth`,
+  PRODUCT: `/Product`,
+  CATEGORY: `/Category`,
+  BRANDS: `/Brands`,
+  CHARACTERISTICS: `/Characteristics`
 };
 
 export const $api = axios.create({
@@ -28,7 +28,7 @@ $api.interceptors.response.use(
       
       try {
         // Try to refresh token. Backend reads old refreshToken from Cookie
-        await axios.post(`${API_ENDPOINTS.AUTH}/refresh`, {}, { withCredentials: true });
+        await axios.post(`${API_BASE_URL}${API_ENDPOINTS.AUTH}/refresh`, {}, { withCredentials: true });
         
         // If successful, backend sets new cookies. We can retry the request.
         return $api.request(originalRequest);

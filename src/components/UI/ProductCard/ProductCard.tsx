@@ -24,7 +24,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, isAdmin = false, onD
 
   const images = product.images && product.images.length > 0 
     ? product.images.map(ensureBase64Prefix)
-    : ['https://via.placeholder.com/300x400?text=No+Image'];
+    : ['https://placehold.co/300x400?text=No+Image'];
 
   const priceDisplay = `${product.price}.${product.priceCoin.toString().padStart(2, '0')} ₴`;
 

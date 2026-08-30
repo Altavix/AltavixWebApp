@@ -1,6 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
 import ProductService from '../../services/ProductService';
+import type { ProductFilters } from '../../services/ProductService';
+import CategoryService from '../../services/CategoryService';
+import BrandService from '../../services/BrandService';
 import type { ProductVm, PaginatedList } from '../../types/product';
+import type { CategoryDto } from '../../types/category';
+import type { BrandDto } from '../../types/brand';
 import { useFetching } from '../../hooks/useFetching';
 import { AuthContext } from '../../context/AuthContext';
 import ProductCard from '../../components/UI/ProductCard/ProductCard';
@@ -10,6 +15,7 @@ import ConfirmModal from '../../components/UI/Modal/ConfirmModal';
 import FormModal from '../../components/UI/Modal/FormModal';
 import ProductForm from '../../components/Admin/ProductForm';
 import type { ProductFormData } from '../../components/Admin/ProductForm';
+import SidebarFilter from '../../components/UI/SidebarFilter/SidebarFilter';
 import '../../styles/pages/Catalog.css';
 
 const Catalog: React.FC = () => {
@@ -19,30 +25,69 @@ const Catalog: React.FC = () => {
   const isAdmin = auth?.isAuth && auth?.user?.role === 'Admin';
   
   const [productsData, setProductsData] = useState<PaginatedList<ProductVm> | null>(null);
+  
+  // Filter options
+  const [categories, setCategories] = useState<CategoryDto[]>([]);
+  const [brands, setBrands] = useState<BrandDto[]>([]);
+  const [characteristics, setCharacteristics] = useState<import('../../types/characteristic').CharacteristicFilterDto[]>([]);
+  const [dbMaxPrice, setDbMaxPrice] = useState<number>(100000);
+  const [isFiltersLoaded, setIsFiltersLoaded] = useState(false);
+  
+  const [currentFilters, setCurrentFilters] = useState<ProductFilters>({
+    page: page,
+    pageSize: pageSize,
+    brandIds: [],
+    categoryIds: [],
+    characteristics: {},
+    minPrice: 0,
+    maxPrice: 100000
+  });
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
-  
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [productToEdit, setProductToEdit] = useState<ProductVm | null>(null);
 
-  const [fetchProducts, isLoading] = useFetching(async (p: number, size: number) => {
+  const [fetchFiltersData] = useFetching(async () => {
+    const [catRes, brandRes, priceRes, charRes] = await Promise.all([
+      CategoryService.getAll(),
+      BrandService.getAll(),
+      ProductService.getMaxPrice(),
+      import('../../services/CharacteristicService').then(m => m.default.getFilters())
+    ]);
+    if (catRes?.data?.categories) setCategories(catRes.data.categories as any);
+    if (brandRes?.data?.data?.brands) setBrands(brandRes.data.data.brands as any);
+    if (charRes?.data?.data) setCharacteristics(charRes.data.data);
+    if (priceRes?.data?.data) {
+        setDbMaxPrice(priceRes.data.data as number);
+        setCurrentFilters(prev => ({...prev, maxPrice: priceRes.data.data as number}));
+    }
+    setIsFiltersLoaded(true);
+  });
+
+  const [fetchProducts, isLoading] = useFetching(async (p: number, size: number, filters: ProductFilters) => {
     return isAdmin 
-      ? await ProductService.getAllAdmin(p, size)
-      : await ProductService.getAllPublic(p, size);
+      ? await ProductService.getAllAdmin({ ...filters, page: p, pageSize: size })
+      : await ProductService.getAllPublic({ ...filters, page: p, pageSize: size });
   });
 
   const loadProducts = async () => {
-    const response = await fetchProducts(page, pageSize);
+    const response = await fetchProducts(page, pageSize, currentFilters);
     if (response && response.messageType !== 'error' && response.data) {
       setProductsData(response.data as PaginatedList<ProductVm>);
     }
   };
 
   useEffect(() => {
+    fetchFiltersData();
+  }, []);
+
+  useEffect(() => {
+    if (!isFiltersLoaded) return;
     loadProducts();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [page, isAdmin]);
+  }, [page, isAdmin, currentFilters, isFiltersLoaded]);
+
 
   const handleDeleteRequest = (id: string) => {
     setProductToDelete(id);
@@ -90,67 +135,72 @@ const Catalog: React.FC = () => {
 
   return (
     <div className="catalog-page">
-      <div className="catalog-header">
-        <h1 className="catalog-title">Discover Our Collection</h1>
-        <p className="catalog-subtitle">Explore the finest products tailored just for you.</p>
+      <div className="container catalog-layout">
+        {/* SIDEBAR */}
+        <aside className="catalog-sidebar">
+          <SidebarFilter 
+            categories={categories}
+            brands={brands}
+            characteristics={characteristics}
+            maxPrice={dbMaxPrice}
+            onFilterChange={(f) => {
+              setCurrentFilters(prev => ({...prev, ...f}));
+              setPage(1);
+            }}
+          />
+        </aside>
         
-        {isAdmin && (
-          <div className="admin-catalog-actions" style={{ marginTop: '2rem' }}>
-            <button 
-              onClick={handleCreateProduct}
-              style={{
-                background: '#fff', 
-                color: 'var(--color-primary-dark)', 
-                padding: '12px 24px', 
-                borderRadius: '8px',
-                fontWeight: 'bold',
-                border: 'none',
-                cursor: 'pointer',
-                boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
-              }}
-            >
-              + Create New Product
-            </button>
-          </div>
-        )}
-      </div>
-      
-      <div className="container">
-        {isLoading ? (
-          <div className="catalog-loader">
-            <Loader />
-          </div>
-        ) : (
-          <>
-            {productsData?.items && productsData.items.length > 0 ? (
-              <>
-                <div className="product-grid">
-                  {productsData.items.map((product) => (
-                    <ProductCard 
-                      key={product.id} 
-                      product={product} 
-                      isAdmin={isAdmin}
-                      onDelete={handleDeleteRequest}
-                      onEdit={handleEditRequest}
-                    />
-                  ))}
-                </div>
-                <Pagination 
-                  currentPage={productsData.pageNumber}
-                  totalPages={productsData.totalPages}
-                  onPageChange={(p) => setPage(p)}
-                  hasNextPage={productsData.hasNextPage}
-                  hasPreviousPage={productsData.hasPreviousPage}
-                />
-              </>
+        {/* MAIN CONTENT */}
+        <div className="catalog-main">
+            <div className="catalog-main-header">
+                <h2>Каталог товарів</h2>
+                {isAdmin && (
+                <button 
+                    className="btn-create-product-icon"
+                    onClick={handleCreateProduct}
+                    title="Створити новий товар"
+                >
+                    +
+                </button>
+                )}
+            </div>
+
+            {isLoading ? (
+            <div className="catalog-loader">
+                <Loader />
+            </div>
             ) : (
-              <div className="catalog-empty">
-                <h3>No products found</h3>
-                <p>Check back later for new arrivals!</p>
-              </div>
+            <>
+                {productsData?.items && productsData.items.length > 0 ? (
+                <>
+                    <div className="product-grid">
+                    {productsData.items.map((product) => (
+                        <ProductCard 
+                        key={product.id} 
+                        product={product} 
+                        isAdmin={isAdmin}
+                        onDelete={handleDeleteRequest}
+                        onEdit={handleEditRequest}
+                        />
+                    ))}
+                    </div>
+                    <Pagination 
+                    currentPage={productsData.pageNumber}
+                    totalPages={productsData.totalPages}
+                    onPageChange={(p) => setPage(p)}
+                    hasNextPage={productsData.hasNextPage}
+                    hasPreviousPage={productsData.hasPreviousPage}
+                    />
+                </>
+                ) : (
+                <div className="catalog-empty">
+                    <h3>Товарів не знайдено</h3>
+                    <p>Спробуйте змінити фільтри</p>
+                </div>
+                )}
+            </>
             )}
-          </>
-        )}
+        </div>
       </div>
 
       <ConfirmModal 

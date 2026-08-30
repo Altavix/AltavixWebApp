@@ -33,10 +33,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // If no user in local storage, try to authenticate via refresh cookie
       try {
         const { default: axios } = await import('axios');
-        const { API_ENDPOINTS } = await import('../config/api');
+        const { API_ENDPOINTS, API_BASE_URL } = await import('../config/api');
         
         // This will send the cookies automatically if they exist
-        const response = await axios.post(`${API_ENDPOINTS.AUTH}/refresh`, {}, { withCredentials: true });
+        const response = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.AUTH}/refresh`, {}, { withCredentials: true });
         
         if (response.data?.messageType === 'success' && response.data.data) {
           const authData = response.data.data;

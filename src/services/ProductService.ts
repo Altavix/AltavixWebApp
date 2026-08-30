@@ -4,11 +4,37 @@ import { API_ENDPOINTS, $api } from '../config/api';
 
 const API_URL = API_ENDPOINTS.PRODUCT;
 
+export interface ProductFilters {
+  page?: number;
+  pageSize?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  brandIds?: string[];
+  categoryIds?: string[];
+  characteristics?: Record<string, string[]>;
+}
+
 export default class ProductService {
-  static async getAllPublic(page: number = 1, pageSize: number = 10) {
-    const response = await $api.get<ApiResponseDto<PaginatedList<ProductVm>>>(API_URL, {
-      params: { page, pageSize }
-    });
+  static async getAllPublic(filters: ProductFilters = { page: 1, pageSize: 10 }) {
+    const params = new URLSearchParams();
+    if (filters.page) params.append('page', filters.page.toString());
+    if (filters.pageSize) params.append('pageSize', filters.pageSize.toString());
+    if (filters.minPrice !== undefined) params.append('minPrice', filters.minPrice.toString());
+    if (filters.maxPrice !== undefined) params.append('maxPrice', filters.maxPrice.toString());
+    
+    if (filters.brandIds) {
+      filters.brandIds.forEach(id => params.append('brandIds', id));
+    }
+    if (filters.categoryIds) {
+      filters.categoryIds.forEach(id => params.append('categoryIds', id));
+    }
+
+    const response = await $api.get<ApiResponseDto<PaginatedList<ProductVm>>>(`${API_URL}?${params.toString()}`);
+    return response;
+  }
+
+  static async getMaxPrice() {
+    const response = await $api.get<ApiResponseDto<number>>(`${API_URL}/max-price`);
     return response;
   }
 
@@ -17,9 +43,25 @@ export default class ProductService {
     return response;
   }
 
-  static async getAllAdmin(page: number = 1, pageSize: number = 10) {
-    const response = await $api.get<ApiResponseDto<PaginatedList<ProductVm>>>(`${API_URL}/admin`, {
-      params: { page, pageSize }
+  static async getAllAdmin(filters: ProductFilters & { page?: number; pageSize?: number }) {
+    const params = new URLSearchParams();
+    
+    if (filters.page) params.append('page', filters.page.toString());
+    if (filters.pageSize) params.append('pageSize', filters.pageSize.toString());
+    if (filters.minPrice !== undefined) params.append('minPrice', filters.minPrice.toString());
+    if (filters.maxPrice !== undefined) params.append('maxPrice', filters.maxPrice.toString());
+    if (filters.brandIds && filters.brandIds.length > 0) {
+      filters.brandIds.forEach(id => params.append('brandIds', id));
+    }
+    if (filters.categoryIds && filters.categoryIds.length > 0) {
+      filters.categoryIds.forEach(id => params.append('categoryIds', id));
+    }
+    if (filters.characteristics && Object.keys(filters.characteristics).length > 0) {
+      params.append('characteristicsJson', JSON.stringify(filters.characteristics));
+    }
+
+    const response = await $api.get<ApiResponseDto<PaginatedList<ProductVm>>>(`${API_ENDPOINTS.PRODUCT}/admin`, {
+      params: params
     });
     return response;
   }

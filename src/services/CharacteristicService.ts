@@ -10,6 +10,11 @@ export default class CharacteristicService {
     return response;
   }
 
+  static async getFilters() {
+    const response = await $api.get<ApiResponseDto<import('../types/characteristic').CharacteristicFilterDto[]>>(`${API_URL}/filters`);
+    return response;
+  }
+
   static async getById(id: string) {
     const response = await $api.get<ApiResponseDto<CharacteristicDto>>(`${API_URL}/${id}`);
     return response;

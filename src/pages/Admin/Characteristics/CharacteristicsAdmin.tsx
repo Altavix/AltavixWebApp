@@ -23,8 +23,8 @@ const CharacteristicsAdmin: React.FC = () => {
 
     const loadCharacteristics = async () => {
         const response = await fetchCharacteristics();
-        if (response && response.messageType !== 'error' && response.data?.characteristics) {
-            setCharacteristics(response.data.characteristics);
+        if (response && response.messageType !== 'error' && response.data?.data?.characteristics) {
+            setCharacteristics(response.data.data.characteristics);
         }
     };
 
