@@ -14,6 +14,7 @@ import Loader from '../../components/UI/Loader';
 import ConfirmModal from '../../components/UI/Modal/ConfirmModal';
 import FormModal from '../../components/UI/Modal/FormModal';
 import ProductForm from '../../components/Admin/ProductForm';
+import Input from '../../components/UI/Input';
 import type { ProductFormData } from '../../components/Admin/ProductForm';
 import SidebarFilter from '../../components/UI/SidebarFilter/SidebarFilter';
 import '../../styles/pages/Catalog.css';
@@ -40,7 +41,8 @@ const Catalog: React.FC = () => {
     categoryIds: [],
     characteristics: {},
     minPrice: 0,
-    maxPrice: 100000
+    maxPrice: 100000,
+    searchTerm: ''
   });
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -163,6 +165,17 @@ const Catalog: React.FC = () => {
                     +
                 </button>
                 )}
+            </div>
+
+            <div className="catalog-search-bar" style={{ marginBottom: '1.5rem', '--input-bg': 'var(--color-bg-light)' } as any}>
+              <Input 
+                label="Пошук" 
+                value={currentFilters.searchTerm || ''}
+                onChange={(e: any) => {
+                  setCurrentFilters(prev => ({...prev, searchTerm: e.target.value}));
+                  setPage(1);
+                }}
+              />
             </div>
 
             {isLoading ? (

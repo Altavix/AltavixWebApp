@@ -31,7 +31,7 @@ textarea.input-field:not(:placeholder-shown) ~ .floating-label {
   top: 0;
   font-size: 0.75rem;
   color: var(--color-primary);
-  background-color: var(--color-bg-white);
+  background-color: var(--input-bg, var(--color-bg-white));
 }
 
 .base-input-control::placeholder,
@@ -49,7 +49,7 @@ textarea.input-field:not(:placeholder-shown) ~ .floating-label {
   font-size: 0.95rem;
   font-family: inherit;
   transition: border-color 0.2s, box-shadow 0.2s;
-  background-color: var(--color-bg-white);
+  background-color: var(--input-bg, var(--color-bg-white));
   color: var(--color-text-main);
   box-sizing: border-box;
   width: 100%;

@@ -12,6 +12,7 @@ export interface ProductFilters {
   brandIds?: string[];
   categoryIds?: string[];
   characteristics?: Record<string, string[]>;
+  searchTerm?: string;
 }
 
 export default class ProductService {
@@ -25,8 +26,9 @@ export default class ProductService {
     if (filters.brandIds) {
       filters.brandIds.forEach(id => params.append('brandIds', id));
     }
-    if (filters.categoryIds) {
-      filters.categoryIds.forEach(id => params.append('categoryIds', id));
+    
+    if (filters.searchTerm) {
+      params.append('searchTerm', filters.searchTerm);
     }
 
     const response = await $api.get<ApiResponseDto<PaginatedList<ProductVm>>>(`${API_URL}?${params.toString()}`);
@@ -53,8 +55,9 @@ export default class ProductService {
     if (filters.brandIds && filters.brandIds.length > 0) {
       filters.brandIds.forEach(id => params.append('brandIds', id));
     }
-    if (filters.categoryIds && filters.categoryIds.length > 0) {
-      filters.categoryIds.forEach(id => params.append('categoryIds', id));
+    
+    if (filters.searchTerm) {
+      params.append('searchTerm', filters.searchTerm);
     }
     if (filters.characteristics && Object.keys(filters.characteristics).length > 0) {
       params.append('characteristicsJson', JSON.stringify(filters.characteristics));

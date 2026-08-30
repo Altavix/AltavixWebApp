@@ -29,9 +29,7 @@ const Header: React.FC = () => {
           </ul>
         </nav>
         <div className="header-actions">
-          <AdminDropdown />
-          <button className="icon-btn">🔍</button>
-          
+          <AdminDropdown />          
           <button className="icon-btn cart-btn" title="Кошик" onClick={toggleCart}>
             🛒
             {totalQuantity > 0 && <span className="cart-badge">{totalQuantity}</span>}
