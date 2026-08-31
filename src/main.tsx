@@ -7,6 +7,12 @@ import { CartProvider } from './context/CartContext'
 import './styles/index.css'
 import App from './App.tsx'
 
+// Очищення старих багованих кукі з неправильним шляхом (з попередньої версії)
+document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/api/Auth;";
+document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/api/Auth;";
+document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/api/Auth";
+document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/api/Auth";
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>

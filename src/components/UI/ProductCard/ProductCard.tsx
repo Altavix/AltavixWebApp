@@ -56,14 +56,30 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, isAdmin = false, onD
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!product.inStock || !product.enabled) return;
     await addToCart(product.id, 1);
   };
 
+  if (!product.enabled && !isAdmin) {
+    return null;
+  }
+
+  const cardClasses = ['product-card'];
+  if (!product.enabled && isAdmin) cardClasses.push('admin-disabled');
+  if (!product.inStock) cardClasses.push('out-of-stock');
+
   return (
-    <div className="product-card" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
+    <div className={cardClasses.join(' ')} onClick={handleCardClick} style={{ cursor: 'pointer' }}>
       <div className="product-image-wrapper">
         <img src={images[currentImageIndex]} alt={product.title} className="product-image" />
         
+        {!product.enabled && isAdmin && (
+          <div className="status-badge badge-disabled">Не активний</div>
+        )}
+        {!product.inStock && product.enabled && (
+          <div className="status-badge badge-out-of-stock">Немає в наявності</div>
+        )}
+
         {images.length > 1 && (
           <div className="carousel-controls">
             <button className="carousel-btn prev-btn" onClick={handlePrevImage}>
@@ -83,13 +99,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, isAdmin = false, onD
           </div>
         )}
 
-        <div className="product-actions">
-          <button className="btn-icon" title="Add to Cart" onClick={handleAddToCart}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
-          </button>
-        </div>
+        {product.inStock && product.enabled && (
+          <div className="product-actions">
+            <button className="btn-icon" title="Add to Cart" onClick={handleAddToCart}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
       <div className="product-info">
         {product.brandName && (

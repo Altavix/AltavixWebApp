@@ -189,12 +189,24 @@ const ProductPage: React.FC = () => {
           )}
 
           <div className="product-actions-large">
-            <button className="btn-add-to-cart" onClick={() => addToCart(product.id, 1)}>
-              Додати в кошик
-            </button>
-            <button className="btn-buy-now">
-              Купити в один клік
-            </button>
+            {!product.enabled ? (
+              <div className="unavailable-message" style={{ color: '#ef4444', fontSize: '1.25rem', fontWeight: 600, padding: '1rem', border: '1px solid #ef4444', borderRadius: '8px', textAlign: 'center', backgroundColor: '#fef2f2' }}>
+                Цей товар знято з продажу
+              </div>
+            ) : !product.inStock ? (
+              <div className="unavailable-message" style={{ color: '#64748b', fontSize: '1.25rem', fontWeight: 600, padding: '1rem', border: '1px solid #94a3b8', borderRadius: '8px', textAlign: 'center', backgroundColor: '#f1f5f9' }}>
+                Немає в наявності
+              </div>
+            ) : (
+              <>
+                <button className="btn-add-to-cart" onClick={() => addToCart(product.id, 1)}>
+                  Додати в кошик
+                </button>
+                <button className="btn-buy-now">
+                  Купити в один клік
+                </button>
+              </>
+            )}
           </div>
         </div>
 

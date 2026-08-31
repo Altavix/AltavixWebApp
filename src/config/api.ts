@@ -15,6 +15,9 @@ export const $api = axios.create({
   baseURL: API_BASE_URL
 });
 
+let isRefreshing = false;
+let refreshPromise: Promise<void> | null = null;
+
 $api.interceptors.response.use(
   (response) => {
     return response;
@@ -26,19 +29,29 @@ $api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._isRetry) {
       originalRequest._isRetry = true;
       
+      if (!isRefreshing) {
+        isRefreshing = true;
+        refreshPromise = axios.post(`${API_BASE_URL}${API_ENDPOINTS.AUTH}/refresh`, {}, { withCredentials: true })
+          .then(() => {
+            isRefreshing = false;
+            refreshPromise = null;
+          })
+          .catch((refreshError) => {
+            isRefreshing = false;
+            refreshPromise = null;
+            console.error('Refresh token expired or invalid. Please login again.');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+            throw refreshError;
+          });
+      }
+      
       try {
-        // Try to refresh token. Backend reads old refreshToken from Cookie
-        await axios.post(`${API_BASE_URL}${API_ENDPOINTS.AUTH}/refresh`, {}, { withCredentials: true });
-        
+        await refreshPromise;
         // If successful, backend sets new cookies. We can retry the request.
         return $api.request(originalRequest);
-      } catch (refreshError) {
-        // If refresh fails, user must log in again.
-        console.error('Refresh token expired or invalid. Please login again.');
-        
-        // Remove stale user data and redirect
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+      } catch (err) {
+        return Promise.reject(err);
       }
     }
     
