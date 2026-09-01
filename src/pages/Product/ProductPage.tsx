@@ -27,6 +27,7 @@ const ProductPage: React.FC = () => {
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState<'description' | 'characteristics'>('description');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -101,111 +102,138 @@ const ProductPage: React.FC = () => {
     <div className="product-page-container">
       <div className="product-page-content">
         
-        {/* Left Column: Image Gallery */}
-        <div className="product-gallery">
-          <div className="main-image-wrapper">
-            <img 
-              src={images[currentImageIndex]} 
-              alt={product.title} 
-              className="main-image"
-            />
-            {images.length > 1 && (
-              <>
-                <button 
-                  className="gallery-nav-btn prev" 
-                  onClick={() => setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1)}
-                >
-                  &#10094;
-                </button>
-                <button 
-                  className="gallery-nav-btn next" 
-                  onClick={() => setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1)}
-                >
-                  &#10095;
-                </button>
-              </>
-            )}
-          </div>
-          
-          {images.length > 1 && (
-            <div className="thumbnail-strip">
-              {images.map((img, idx) => (
-                <div 
-                  key={idx} 
-                  className={`thumbnail-wrapper ${idx === currentImageIndex ? 'active' : ''}`}
-                  onClick={() => setCurrentImageIndex(idx)}
-                >
-                  <img src={img} alt={`Thumbnail ${idx + 1}`} className="thumbnail-image" />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Right Column: Product Details */}
-        <div className="product-details">
-          <div className="product-categories">
-            {productCategories.map(cat => (
-              <span key={cat.id} className="category-badge">
-                {cat.title}
-              </span>
-            ))}
-          </div>
-
-          {product.brandName && (
-            <div className="product-brand-large">{product.brandName}</div>
-          )}
-
-          <h1 className="product-title-large">{product.title}</h1>
-          <div className="product-price-large">{priceDisplay}</div>
-
-          <div className="product-description-container">
-            <h3>Опис товару</h3>
-            <p className="product-description-text">{product.description}</p>
-          </div>
-
-          {product.characteristics && product.characteristics.length > 0 && (
-            <div className="product-characteristics-container">
-              <h3>Характеристики</h3>
-              <table className="characteristics-table-public">
-                <tbody>
-                  {(isExpanded ? product.characteristics : product.characteristics.slice(0, 4)).map((char, index) => (
-                    <tr key={index}>
-                      <td className="char-name">{char.name}</td>
-                      <td className="char-value">{char.value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {product.characteristics.length > 4 && (
-                <button 
-                  className="btn-show-more" 
-                  onClick={() => setIsExpanded(!isExpanded)}
-                >
-                  {isExpanded ? 'Менше' : 'Ще'}
-                </button>
+        {/* Left Column: Image Gallery and Basic Info */}
+        <div className="product-left-column">
+          <div className="product-gallery">
+            <div className="main-image-wrapper">
+              <img 
+                src={images[currentImageIndex]} 
+                alt={product.title} 
+                className="main-image"
+              />
+              {images.length > 1 && (
+                <>
+                  <button 
+                    className="gallery-nav-btn prev" 
+                    onClick={() => setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1)}
+                  >
+                    &#10094;
+                  </button>
+                  <button 
+                    className="gallery-nav-btn next" 
+                    onClick={() => setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1)}
+                  >
+                    &#10095;
+                  </button>
+                </>
               )}
             </div>
-          )}
+            
+            {images.length > 1 && (
+              <div className="thumbnail-strip">
+                {images.map((img, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`thumbnail-wrapper ${idx === currentImageIndex ? 'active' : ''}`}
+                    onClick={() => setCurrentImageIndex(idx)}
+                  >
+                    <img src={img} alt={`Thumbnail ${idx + 1}`} className="thumbnail-image" />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-          <div className="product-actions-large">
-            {!product.enabled ? (
-              <div className="unavailable-message" style={{ color: '#ef4444', fontSize: '1.25rem', fontWeight: 600, padding: '1rem', border: '1px solid #ef4444', borderRadius: '8px', textAlign: 'center', backgroundColor: '#fef2f2' }}>
-                Цей товар знято з продажу
+          <div className="product-info-under-image">
+            <div className="product-categories">
+              {productCategories.map(cat => (
+                <span key={cat.id} className="category-badge">
+                  {cat.title}
+                </span>
+              ))}
+            </div>
+
+            {product.brandName && (
+              <div className="product-brand-large">{product.brandName}</div>
+            )}
+
+            <h1 className="product-title-large">{product.title}</h1>
+            <div className="product-price-large">{priceDisplay}</div>
+
+            <div className="product-actions-large">
+              {!product.enabled ? (
+                <div className="unavailable-message" style={{ color: '#ef4444', fontSize: '1.25rem', fontWeight: 600, padding: '1rem', border: '1px solid #ef4444', borderRadius: '8px', textAlign: 'center', backgroundColor: '#fef2f2' }}>
+                  Цей товар знято з продажу
+                </div>
+              ) : !product.inStock ? (
+                <div className="unavailable-message" style={{ color: '#64748b', fontSize: '1.25rem', fontWeight: 600, padding: '1rem', border: '1px solid #94a3b8', borderRadius: '8px', textAlign: 'center', backgroundColor: '#f1f5f9' }}>
+                  Немає в наявності
+                </div>
+              ) : (
+                <>
+                  <button className="btn-add-to-cart" onClick={() => addToCart(product.id, 1)}>
+                    Додати в кошик
+                  </button>
+                  {/* <button className="btn-buy-now">
+                    Купити в один клік
+                  </button> */}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Tabs (Description / Characteristics) */}
+        <div className="product-right-column">
+          <div className="product-tabs">
+            <button 
+              className={`product-tab-btn ${activeTab === 'description' ? 'active' : ''}`}
+              onClick={() => setActiveTab('description')}
+            >
+              Опис
+            </button>
+            <button 
+              className={`product-tab-btn ${activeTab === 'characteristics' ? 'active' : ''}`}
+              onClick={() => setActiveTab('characteristics')}
+            >
+              Характеристики
+            </button>
+          </div>
+
+          <div className="product-tab-content">
+            {activeTab === 'description' && (
+              <div className="product-description-container">
+                <p className="product-description-text">{product.description}</p>
               </div>
-            ) : !product.inStock ? (
-              <div className="unavailable-message" style={{ color: '#64748b', fontSize: '1.25rem', fontWeight: 600, padding: '1rem', border: '1px solid #94a3b8', borderRadius: '8px', textAlign: 'center', backgroundColor: '#f1f5f9' }}>
-                Немає в наявності
+            )}
+            
+            {activeTab === 'characteristics' && (
+              <div className="product-characteristics-container">
+                {product.characteristics && product.characteristics.length > 0 ? (
+                  <>
+                    <table className="characteristics-table-public">
+                      <tbody>
+                        {(isExpanded ? product.characteristics : product.characteristics.slice(0, 8)).map((char, index) => (
+                          <tr key={index}>
+                            <td className="char-name">{char.name}</td>
+                            <td className="char-value">{char.value}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {product.characteristics.length > 8 && (
+                      <button 
+                        className="btn-show-more" 
+                        onClick={() => setIsExpanded(!isExpanded)}
+                      >
+                        {isExpanded ? 'Менше' : 'Ще'}
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <p>Характеристики відсутні</p>
+                )}
               </div>
-            ) : (
-              <>
-                <button className="btn-add-to-cart" onClick={() => addToCart(product.id, 1)}>
-                  Додати в кошик
-                </button>
-                <button className="btn-buy-now">
-                  Купити в один клік
-                </button>
-              </>
             )}
           </div>
         </div>

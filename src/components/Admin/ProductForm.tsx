@@ -179,11 +179,14 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
     const characteristic = availableCharacteristics.find(c => c.id === selectedCharId);
     if (!characteristic) return;
 
-    setProductCharacteristics(prev => [...prev, {
-      characteristicId: characteristic.id,
-      name: characteristic.name,
-      value: charValue.trim()
-    }]);
+    setProductCharacteristics(prev => {
+      const newChars = [...prev, {
+        characteristicId: characteristic.id,
+        name: characteristic.name,
+        value: charValue.trim()
+      }];
+      return newChars.sort((a, b) => a.name.localeCompare(b.name));
+    });
     
     setSelectedCharId('');
     setCharValue('');
