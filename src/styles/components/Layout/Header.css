@@ -95,3 +95,35 @@
   border: 2px solid var(--color-primary);
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
+
+.mobile-menu-btn {
+  display: none;
+  font-size: 2rem;
+  color: var(--color-text-inverse);
+  cursor: pointer;
+  line-height: 1;
+  padding-right: 1rem;
+}
+
+.desktop-only-actions {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+  
+  .desktop-only, .desktop-only-actions {
+    display: none !important;
+  }
+  
+  .header-content {
+    padding: 0 1rem;
+  }
+  
+  .header-logo-img {
+    height: 40px !important;
+  }
+}

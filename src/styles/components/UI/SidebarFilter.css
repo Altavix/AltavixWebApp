@@ -69,10 +69,11 @@
   position: absolute;
   pointer-events: none;
   -webkit-appearance: none;
+  appearance: none;
   z-index: 2;
   height: 24px;
   width: 100%;
-  opacity: 0;
+  background: transparent;
   cursor: pointer;
 }
 
@@ -81,6 +82,16 @@
   width: 16px;
   height: 16px;
   -webkit-appearance: none;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.range-slider input[type=range]::-moz-range-thumb {
+  pointer-events: all;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: var(--color-primary);
   border: 2px solid white;
@@ -129,4 +140,41 @@
 }
 .btn-show-more-filter:hover {
   color: var(--color-primary-dark);
+}
+
+.sidebar-filter-actions {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .sidebar-filter-actions {
+    display: flex;
+    gap: 1rem;
+    position: sticky;
+    bottom: -1.5rem; /* to account for padding of the container if any */
+    background: white;
+    padding: 1rem 0;
+    border-top: 1px solid var(--color-border);
+    margin-top: 2rem;
+    z-index: 10;
+  }
+  
+  .sidebar-filter-actions button {
+    flex: 1;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+  }
+  
+  .sidebar-filter-actions .btn-secondary {
+    background: #f1f5f9;
+    color: var(--color-text-main);
+  }
+  
+  .sidebar-filter-actions .btn-primary {
+    background: var(--color-primary);
+    color: white;
+  }
 }

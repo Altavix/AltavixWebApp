@@ -39,14 +39,14 @@ const UserDropdown: React.FC = () => {
             {isOpen && (
                 <div className="user-dropdown-menu">
                     <Link to="/profile" className="dropdown-item" onClick={closeDropdown}>
-                        <span className="icon"><img src="/icons/profile.svg" alt="Профіль" style={{width: '16px', height: '16px', filter: 'brightness(0)'}} /></span> Профіль
+                        <span className="icon"><img src="/icons/profile.svg" alt="Профіль" style={{width: '16px', height: '16px'}} /></span> Профіль
                     </Link>
                     <Link to="/my-orders" className="dropdown-item" onClick={closeDropdown}>
-                        <span className="icon"><img src="/icons/box.svg" alt="Мої замовлення" style={{width: '16px', height: '16px', filter: 'brightness(0)'}} /></span> Мої замовлення
+                        <span className="icon"><img src="/icons/box.svg" alt="Мої замовлення" style={{width: '16px', height: '16px'}} /></span> Мої замовлення
                     </Link>
                     <div className="dropdown-divider"></div>
                     <button className="dropdown-item logout-btn" onClick={() => { closeDropdown(); logout(); }}>
-                        <span className="icon"><img src="/icons/door.svg" alt="Вийти" style={{width: '16px', height: '16px', filter: 'brightness(0)'}} /></span> Вийти
+                        <span className="icon"><img src="/icons/door.svg" alt="Вийти" style={{width: '16px', height: '16px'}} /></span> Вийти
                     </button>
                 </div>
             )}

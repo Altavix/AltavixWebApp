@@ -241,13 +241,14 @@
   filter: grayscale(50%) opacity(0.8);
 }
 
-.status-badge {
+.product-card .status-badge {
   position: absolute;
   top: 1rem;
   left: 1rem;
   padding: 0.25rem 0.75rem;
   border-radius: 4px;
-  font-size: 0.8rem;
+  font-weight: 700;
+  font-size: 0.75rem;
   font-weight: 600;
   color: white;
   z-index: 10;

@@ -64,9 +64,9 @@
 }
 
 /* Z-index management for custom selects */
-.select-high-z { position: relative; z-index: 10; }
-.select-medium-z { position: relative; z-index: 9; }
-.select-low-z { position: relative; z-index: 5; }
+.select-high-z { position: relative; z-index: 100; }
+.select-medium-z { position: relative; z-index: 90; }
+.select-low-z { position: relative; z-index: 50; }
 
 @media (max-width: 640px) {
     .order-form-fields .form-section {

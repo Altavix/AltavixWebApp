@@ -154,3 +154,14 @@
     display: flex;
     gap: 1rem;
 }
+
+@media (max-width: 768px) {
+    .form-group-row {
+        flex-direction: column;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+}

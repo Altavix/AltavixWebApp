@@ -192,3 +192,40 @@
   font-size: 0.9rem;
   color: var(--color-text-muted);
 }
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 2rem 0;
+  }
+  
+  .hero-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    margin: 0 auto 2rem auto;
+  }
+  
+  .hero-content {
+    order: 2;
+  }
+  
+  .hero-image-container {
+    order: 1;
+    margin-bottom: 1rem;
+  }
+  
+  .hero-image-container img {
+    max-height: 250px;
+  }
+  
+  .cards-grid,
+  .advantages-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -45,7 +45,7 @@ const Select: React.FC<SelectProps> = ({
   const selectedOption = options.find(o => o.key === selectedValue);
 
   return (
-    <div className={`input-group ${selectedValue ? 'has-value' : ''}`} ref={containerRef}>
+    <div className={`input-group ${selectedValue ? 'has-value' : ''}`} style={{ zIndex: isOpen ? 100 : 1 }} ref={containerRef}>
       <div 
         className={`select-container base-input-control ${isOpen ? 'open' : ''}`}
         onClick={() => setIsOpen(!isOpen)}

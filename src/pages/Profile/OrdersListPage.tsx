@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { OrderService } from '../../services/CartService';
@@ -110,7 +110,7 @@ const OrdersListPage: React.FC = () => {
                                 </div>
                                 <div className="order-col col-status">
                                     <span className="col-label">СТАТУС</span>
-                                    <span className="status-badge" style={{ backgroundColor: `${statusMap[0].color}15`, color: statusMap[0].color }}>
+                                    <span className="order-status-badge" style={{ backgroundColor: `${statusMap[0].color}15`, color: statusMap[0].color }}>
                                         🛒 Кошик
                                     </span>
                                 </div>
@@ -159,7 +159,7 @@ const OrdersListPage: React.FC = () => {
                                     </div>
                                     <div className="order-col col-status">
                                         <span className="col-label">СТАТУС</span>
-                                        <span className="status-badge" style={{ backgroundColor: `${statusMap[order.status].color}15`, color: statusMap[order.status].color }}>
+                                        <span className="order-status-badge" style={{ backgroundColor: `${statusMap[order.status].color}15`, color: statusMap[order.status].color }}>
                                             {statusMap[order.status].label}
                                         </span>
                                         <span className="status-date">{getStatusDate(order)}</span>

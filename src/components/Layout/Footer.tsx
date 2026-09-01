@@ -37,7 +37,7 @@ const Footer: React.FC = () => {
 
           <div className="contact-email">
             <img src="/icons/email.svg" alt="Email" style={{ width: '22px', height: '22px' }} />
-            <a href="mailto:info@altavix.ua">info@altavix.ua</a>
+            <a href="mailto:altavixpower@gmail.com">altavixpower@gmail.com</a>
           </div>
         </div>
 

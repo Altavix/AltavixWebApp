@@ -17,6 +17,7 @@ interface SidebarFilterProps {
     minPrice: number;
     maxPrice: number;
   }) => void;
+  onClose?: () => void;
 }
 
 const SidebarFilter: React.FC<SidebarFilterProps> = ({ 
@@ -24,7 +25,8 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
   brands = [], 
   characteristics = [],
   maxPrice,
-  onFilterChange 
+  onFilterChange,
+  onClose
 }) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -87,6 +89,14 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
     if (val >= minPrice && val <= maxPrice) setCurrentMaxPrice(val);
   };
 
+  const handleReset = () => {
+    setSelectedCategories([]);
+    setSelectedBrands([]);
+    setSelectedCharacteristics({});
+    setMinPrice(0);
+    setCurrentMaxPrice(maxPrice || 100000);
+  };
+
   // Sort logically or alphabetically
   const sortedCategories = [...(categories || [])].sort((a, b) => a.title.localeCompare(b.title));
   const sortedBrands = [...(brands || [])].sort((a, b) => a.name.localeCompare(b.name));
@@ -115,10 +125,9 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
             max={maxPrice}
           />
         </div>
-        <div className="price-slider-container">
-          <div className="price-slider-track"></div>
+        <div className="range-slider">
           <div 
-            className="price-slider-range" 
+            className="slider-track" 
             style={{ 
              left: `${maxPrice > 0 ? (minPrice / maxPrice) * 100 : 0}%`,
              right: `${maxPrice > 0 ? 100 - (currentMaxPrice / maxPrice) * 100 : 0}%`
@@ -126,7 +135,7 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
           ></div>
           <input 
             type="range" 
-            className="price-slider-thumb thumb-left"
+            className="thumb-left"
             min={0} 
             max={maxPrice} 
             value={minPrice} 
@@ -134,7 +143,7 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
           />
           <input 
             type="range" 
-            className="price-slider-thumb thumb-right"
+            className="thumb-right"
             min={0} 
             max={maxPrice} 
             value={currentMaxPrice} 
@@ -215,6 +224,11 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
           </div>
         );
       })}
+
+      <div className="sidebar-filter-actions">
+        <button className="btn-secondary" onClick={handleReset}>Скинути</button>
+        <button className="btn-primary" onClick={onClose}>Застосувати</button>
+      </div>
     </div>
   );
 };

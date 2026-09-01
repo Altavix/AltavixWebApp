@@ -48,7 +48,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
     .join(', ');
 
   return (
-    <div className={`input-group ${selectedValues.length > 0 ? 'has-value' : ''}`} ref={containerRef}>
+    <div className={`input-group ${selectedValues.length > 0 ? 'has-value' : ''}`} style={{ zIndex: isOpen ? 100 : 1 }} ref={containerRef}>
       <div 
         className={`multiselect-container base-input-control ${isOpen ? 'open' : ''}`}
         onClick={() => setIsOpen(!isOpen)}

@@ -80,6 +80,8 @@ const Catalog: React.FC = () => {
     }
   };
 
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
   useEffect(() => {
     fetchFiltersData();
   }, []);
@@ -139,7 +141,11 @@ const Catalog: React.FC = () => {
     <div className="catalog-page">
       <div className="container catalog-layout">
         {/* SIDEBAR */}
-        <aside className="catalog-sidebar">
+        <aside className={`catalog-sidebar ${isMobileFilterOpen ? 'open' : ''}`}>
+          <div className="mobile-filter-header">
+            <h3>Фільтри</h3>
+            <button className="close-filter-btn" onClick={() => setIsMobileFilterOpen(false)}>&times;</button>
+          </div>
           <SidebarFilter 
             categories={categories}
             brands={brands}
@@ -149,13 +155,24 @@ const Catalog: React.FC = () => {
               setCurrentFilters(prev => ({...prev, ...f}));
               setPage(1);
             }}
+            onClose={() => setIsMobileFilterOpen(false)}
           />
         </aside>
         
         {/* MAIN CONTENT */}
         <div className="catalog-main">
             <div className="catalog-main-header">
-                <h2>Каталог товарів</h2>
+                <div className="catalog-title-group">
+                  <h2>Каталог товарів</h2>
+                  <div className="catalog-header-actions">
+                    <button className="icon-btn mobile-filter-btn" onClick={() => setIsMobileFilterOpen(true)}>
+                      <img src="/icons/filters.svg" alt="Фільтри" />
+                    </button>
+                    <button className="icon-btn sort-btn">
+                      <img src="/icons/sort.svg" alt="Сортування" />
+                    </button>
+                  </div>
+                </div>
                 {isAdmin && (
                 <button 
                     className="btn-create-product-icon"
