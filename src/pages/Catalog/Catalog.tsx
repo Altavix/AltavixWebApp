@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import ProductService from '../../services/ProductService';
 import type { ProductFilters } from '../../services/ProductService';
 import CategoryService from '../../services/CategoryService';
@@ -19,6 +19,13 @@ import type { ProductFormData } from '../../components/Admin/ProductForm';
 import SidebarFilter from '../../components/UI/SidebarFilter/SidebarFilter';
 import '../../styles/pages/Catalog.css';
 
+const sortOptions = [
+  { value: 'price_asc', label: 'Від дешевших до дорожчих' },
+  { value: 'price_desc', label: 'Від дорожчих до дешевших' },
+  { value: 'newest', label: 'Від найновіших' },
+  { value: 'oldest', label: 'Від найстаріших' },
+];
+
 const Catalog: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const pageSize = 8;
@@ -33,6 +40,8 @@ const Catalog: React.FC = () => {
   const [characteristics, setCharacteristics] = useState<import('../../types/characteristic').CharacteristicFilterDto[]>([]);
   const [dbMaxPrice, setDbMaxPrice] = useState<number>(100000);
   const [isFiltersLoaded, setIsFiltersLoaded] = useState(false);
+  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+  const sortMenuRef = useRef<HTMLDivElement>(null);
   
   const [currentFilters, setCurrentFilters] = useState<ProductFilters>({
     page: page,
@@ -42,8 +51,23 @@ const Catalog: React.FC = () => {
     characteristics: {},
     minPrice: 0,
     maxPrice: 100000,
-    searchTerm: ''
+    searchTerm: '',
+    sortBy: 'newest'
   });
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (sortMenuRef.current && !sortMenuRef.current.contains(e.target as Node)) {
+        setIsSortMenuOpen(false);
+      }
+    };
+    if (isSortMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isSortMenuOpen]);
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
@@ -168,9 +192,28 @@ const Catalog: React.FC = () => {
                     <button className="icon-btn mobile-filter-btn" onClick={() => setIsMobileFilterOpen(true)}>
                       <img src="/icons/filters.svg" alt="Фільтри" />
                     </button>
-                    <button className="icon-btn sort-btn">
-                      <img src="/icons/sort.svg" alt="Сортування" />
-                    </button>
+                    <div className="sort-menu-container" ref={sortMenuRef} style={{ position: 'relative' }}>
+                      <button className="icon-btn sort-btn" onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}>
+                        <img src="/icons/sort.svg" alt="Сортування" />
+                      </button>
+                      {isSortMenuOpen && (
+                        <div className="sort-dropdown">
+                          {sortOptions.map(option => (
+                            <button
+                              key={option.value}
+                              className={`sort-option ${currentFilters.sortBy === option.value ? 'active' : ''}`}
+                              onClick={() => {
+                                setCurrentFilters(prev => ({...prev, sortBy: option.value}));
+                                setPage(1);
+                                setIsSortMenuOpen(false);
+                              }}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 {isAdmin && (

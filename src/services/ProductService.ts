@@ -13,6 +13,7 @@ export interface ProductFilters {
   categoryIds?: string[];
   characteristics?: Record<string, string[]>;
   searchTerm?: string;
+  sortBy?: string;
 }
 
 export default class ProductService {
@@ -29,6 +30,10 @@ export default class ProductService {
     
     if (filters.searchTerm) {
       params.append('searchTerm', filters.searchTerm);
+    }
+
+    if (filters.sortBy) {
+      params.append('sortBy', filters.sortBy);
     }
 
     const response = await $api.get<ApiResponseDto<PaginatedList<ProductVm>>>(`${API_URL}?${params.toString()}`);
@@ -59,6 +64,11 @@ export default class ProductService {
     if (filters.searchTerm) {
       params.append('searchTerm', filters.searchTerm);
     }
+    
+    if (filters.sortBy) {
+      params.append('sortBy', filters.sortBy);
+    }
+
     if (filters.characteristics && Object.keys(filters.characteristics).length > 0) {
       params.append('characteristicsJson', JSON.stringify(filters.characteristics));
     }
