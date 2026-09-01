@@ -10,6 +10,7 @@ interface MobileDrawerProps {
 
 const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose }) => {
   const { isAuth, user, logout } = useAuth();
+  const [isAdminMenuOpen, setIsAdminMenuOpen] = React.useState(false);
 
   // Prevent background scrolling when drawer is open
   useEffect(() => {
@@ -60,9 +61,40 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose }) => {
                   <Link to="/profile" onClick={onClose}>Профіль</Link>
                   <Link to="/my-orders" onClick={onClose}>Мої замовлення</Link>
                   {user.role === 'Admin' && (
-                    <Link to="/admin/orders" onClick={onClose} style={{ color: 'var(--color-primary)', fontWeight: 'bold' }}>
-                      ⚙️ Адмін панель
-                    </Link>
+                    <div className="drawer-admin-section">
+                      <button 
+                        className="drawer-admin-toggle"
+                        onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}
+                        style={{ 
+                          display: 'flex', 
+                          justifyContent: 'space-between', 
+                          alignItems: 'center', 
+                          width: '100%', 
+                          background: 'none', 
+                          border: 'none', 
+                          padding: '0.75rem 0',
+                          color: 'var(--color-primary)', 
+                          fontWeight: 'bold',
+                          fontSize: '1rem',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <span>⚙️ Адмін панель</span>
+                        <span>{isAdminMenuOpen ? '▼' : '◀'}</span>
+                      </button>
+                      
+                      {isAdminMenuOpen && (
+                        <div className="drawer-admin-links" style={{ display: 'flex', flexDirection: 'column', paddingLeft: '1.5rem', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                          <Link to="/admin/orders" onClick={onClose}>Монітор замовлень</Link>
+                          <Link to="/admin/products" onClick={onClose}>Товари</Link>
+                          <Link to="/admin/brands" onClick={onClose}>Бренди</Link>
+                          <Link to="/admin/characteristics" onClick={onClose}>Характеристики</Link>
+                          <Link to="/admin/categories" onClick={onClose}>Категорії</Link>
+                          <Link to="/admin/delivery" onClick={onClose}>Доставка</Link>
+                          <Link to="/admin/payment" onClick={onClose}>Оплата</Link>
+                        </div>
+                      )}
+                    </div>
                   )}
                   <button onClick={() => { logout(); onClose(); }} className="drawer-logout-btn">Вийти</button>
                 </div>
