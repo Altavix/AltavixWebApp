@@ -15,30 +15,30 @@ const Header: React.FC = () => {
       <div className="header-content">
         <div className="logo">
           <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-            <span className="logo-placeholder">A</span>
-            <span className="logo-text">ALTAVIX</span>
+            <img src="/logo/icon3.png" alt="Altavix Logo" style={{ height: '60px', objectFit: 'contain' }} />
           </Link>
         </div>
         <nav className="nav">
           <ul>
             <li><NavLink to="/" end>Головна</NavLink></li>
-            <li><a href="#">Про нас</a></li>
+            <li><NavLink to="/about">Про нас</NavLink></li>
             <li><NavLink to="/catalog">Каталог</NavLink></li>
-            <li><a href="#">Контакти</a></li>
             {isAuth && <span style={{display: 'none'}}>{/* Just a placeholder to use isAuth if needed */}</span>}
           </ul>
         </nav>
         <div className="header-actions">
           <AdminDropdown />          
           <button className="icon-btn cart-btn" title="Кошик" onClick={toggleCart}>
-            🛒
+            <img src="/icons/cart.svg" alt="Кошик" style={{width: '24px', height: '24px'}} />
             {totalQuantity > 0 && <span className="cart-badge">{totalQuantity}</span>}
           </button>
 
           {isAuth ? (
             <UserDropdown />
           ) : (
-            <Link to="/login" className="icon-btn" title="Увійти">👤</Link>
+            <Link to="/login" className="icon-btn" title="Увійти">
+              <img src="/icons/profile.svg" alt="Профіль" style={{width: '24px', height: '24px'}} />
+            </Link>
           )}
         </div>
       </div>

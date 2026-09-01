@@ -12,6 +12,7 @@ import OrdersListPage from './pages/Profile/OrdersListPage'
 import OrdersMonitor from './pages/Admin/Orders/OrdersMonitor'
 import BrandsAdmin from './pages/Admin/Brands/BrandsAdmin'
 import CharacteristicsAdmin from './pages/Admin/Characteristics/CharacteristicsAdmin'
+import AboutPage from './pages/About/AboutPage'
 import Toast from './components/UI/Toast'
 import './styles/index.css'
 
@@ -22,6 +23,7 @@ function App() {
         {/* Main Frontend Layout */}
         <Route element={<Layout><Outlet /></Layout>}>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin/register" element={<RegisterAdmin />} />

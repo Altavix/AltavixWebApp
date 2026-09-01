@@ -30,7 +30,9 @@ const AdminDropdown: React.FC = () => {
         <div className="user-dropdown-container" ref={dropdownRef} style={{ marginLeft: '1rem' }}>
             <button className="user-dropdown-btn" onClick={toggleDropdown} style={{ backgroundColor: 'var(--primary)', color: 'var(--bg)', borderRadius: '4px', padding: '0.4rem 0.75rem' }}>
                 <span className="user-name">⚙️ Адмін панель</span>
-                <span className="dropdown-arrow">▼</span>
+                <span className="dropdown-arrow" style={{fontSize: '0.8em', marginLeft: '4px'}}>
+                    {isOpen ? '▼' : '◀'}
+                </span>
             </button>
             
             {isOpen && (

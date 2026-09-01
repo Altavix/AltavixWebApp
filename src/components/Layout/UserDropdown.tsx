@@ -31,20 +31,22 @@ const UserDropdown: React.FC = () => {
         <div className="user-dropdown-container" ref={dropdownRef}>
             <button className="user-dropdown-btn" onClick={toggleDropdown}>
                 <span className="user-name">{user.name || user.email}</span>
-                <span className="dropdown-arrow">-</span>
+                <span className="dropdown-arrow" style={{fontSize: '0.8em', marginLeft: '4px'}}>
+                    {isOpen ? '▼' : '◀'}
+                </span>
             </button>
             
             {isOpen && (
                 <div className="user-dropdown-menu">
                     <Link to="/profile" className="dropdown-item" onClick={closeDropdown}>
-                        <span className="icon">👤</span> Профіль
+                        <span className="icon"><img src="/icons/profile.svg" alt="Профіль" style={{width: '16px', height: '16px', filter: 'brightness(0)'}} /></span> Профіль
                     </Link>
                     <Link to="/my-orders" className="dropdown-item" onClick={closeDropdown}>
-                        <span className="icon">📦</span> Мої замовлення
+                        <span className="icon"><img src="/icons/box.svg" alt="Мої замовлення" style={{width: '16px', height: '16px', filter: 'brightness(0)'}} /></span> Мої замовлення
                     </Link>
                     <div className="dropdown-divider"></div>
                     <button className="dropdown-item logout-btn" onClick={() => { closeDropdown(); logout(); }}>
-                        <span className="icon">🚪</span> Вийти
+                        <span className="icon"><img src="/icons/door.svg" alt="Вийти" style={{width: '16px', height: '16px', filter: 'brightness(0)'}} /></span> Вийти
                     </button>
                 </div>
             )}

@@ -1,0 +1,128 @@
+.about-page-container {
+  padding: 4rem 1rem;
+  background-color: var(--color-bg-light); /* Or maybe just white */
+  min-height: calc(100vh - 200px);
+}
+
+.about-content-wrapper {
+  max-width: 850px;
+  margin: 0 auto;
+  background-color: var(--color-bg-white);
+  padding: 4rem 5rem;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+.about-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--color-text-dark);
+  margin-bottom: 3rem;
+  text-align: center;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.about-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background-color: var(--color-primary);
+  border-radius: 2px;
+}
+
+.about-typography {
+  color: var(--color-text-main);
+  line-height: 1.8;
+  font-size: 1.15rem;
+}
+
+.about-typography .lead-text {
+  font-size: 1.35rem;
+  color: var(--color-text-dark);
+  margin-bottom: 3rem;
+  line-height: 1.7;
+}
+
+.about-typography h2 {
+  font-size: 1.8rem;
+  color: var(--color-text-dark);
+  margin-top: 3.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.about-typography p {
+  margin-bottom: 1.5rem;
+}
+
+.about-typography blockquote {
+  font-size: 1.4rem;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--color-primary-dark);
+  margin: 3.5rem 0;
+  padding: 2rem 2.5rem;
+  border-left: 4px solid var(--color-primary);
+  background: var(--color-bg-light);
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+.about-cta-text {
+  margin-top: 5rem;
+  padding-top: 4rem;
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.about-cta-text p {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  margin-bottom: 2rem;
+}
+
+.about-cta-text .btn-primary {
+  display: inline-block;
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  background-color: var(--color-primary);
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.about-cta-text .btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 768px) {
+  .about-content-wrapper {
+    padding: 2rem 1.5rem;
+  }
+  
+  .about-title {
+    font-size: 2.2rem;
+  }
+  
+  .about-typography {
+    font-size: 1rem;
+  }
+  
+  .about-typography .lead-text {
+    font-size: 1.15rem;
+  }
+  
+  .about-typography blockquote {
+    font-size: 1.2rem;
+    padding: 1.5rem;
+  }
+}

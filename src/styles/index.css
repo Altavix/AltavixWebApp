@@ -9,8 +9,8 @@
   --accent-border: rgba(170, 59, 255, 0.5);
   --social-bg: rgba(244, 243, 236, 0.5);
   /* Brand colors based on the logo */
-  --color-primary: #4A1525; /* Dark burgundy */
-  --color-primary-light: #6A2135;
+  --color-primary: #510722; /* Dark burgundy from icon background */
+  --color-primary-light: #6A1A3A;
   --color-primary-dark: #320d18;
   
   --color-bg-light: #F8F9FA; /* Light background for the whole page */
