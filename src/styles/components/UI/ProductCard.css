@@ -97,6 +97,7 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  word-break: break-word;
 }
 
 .product-description {
@@ -108,6 +109,7 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   flex-grow: 1;
+  word-break: break-word;
 }
 
 .product-footer {

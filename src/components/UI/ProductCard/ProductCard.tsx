@@ -18,6 +18,12 @@ const ensureBase64Prefix = (base64Str: string) => {
   return `data:image/jpeg;base64,${base64Str}`;
 };
 
+const getPlainText = (html: string) => {
+  if (!html) return '';
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  return doc.body.textContent || "";
+};
+
 const ProductCard: React.FC<ProductCardProps> = ({ product, isAdmin = false, onDelete, onEdit }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const navigate = useNavigate();
@@ -114,7 +120,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, isAdmin = false, onD
           <div className="product-brand">{product.brandName}</div>
         )}
         <h3 className="product-title">{product.title}</h3>
-        <p className="product-description">{product.description}</p>
+        <p className="product-description">{getPlainText(product.description)}</p>
         <div className="product-footer">
           <span className="product-price">{priceDisplay}</span>
         </div>

@@ -6,6 +6,7 @@ import CategoryService from '../../services/CategoryService';
 import type { ProductVm } from '../../types/product';
 import type { CategoryDto } from '../../types/category';
 import Loader from '../../components/UI/Loader';
+import 'react-quill-new/dist/quill.snow.css';
 import '../../styles/pages/ProductPage.css';
 
 const ensureBase64Prefix = (base64Str: string) => {
@@ -202,8 +203,8 @@ const ProductPage: React.FC = () => {
 
           <div className="product-tab-content">
             {activeTab === 'description' && (
-              <div className="product-description-container">
-                <p className="product-description-text">{product.description}</p>
+              <div className="product-description-container ql-snow">
+                <div className="product-description-formatted ql-editor" dangerouslySetInnerHTML={{ __html: product.description || '' }} style={{ padding: 0 }} />
               </div>
             )}
             

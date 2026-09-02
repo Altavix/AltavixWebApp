@@ -258,3 +258,30 @@
 .image-preview button:hover {
   background-color: red;
 }
+
+.quill-container .ql-container {
+  min-height: 150px;
+  max-height: 400px;
+  overflow-y: auto;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.quill-container .ql-editor {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.quill-container .ql-toolbar {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  background-color: var(--color-bg-light, #f8f9fa);
+}
+
+.product-form-main {
+  min-width: 0;
+}

@@ -13,6 +13,8 @@ import CategoryForm from './CategoryForm';
 import type { CategoryFormData } from './CategoryForm';
 import { useFetching } from '../../hooks/useFetching';
 import MultiSelect from '../UI/Select/MultiSelect';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 import '../../styles/components/Admin/ProductForm.css';
 
 export interface ProductFormData {
@@ -40,6 +42,25 @@ const ensureBase64Prefix = (base64Str: string) => {
   }
   return `data:image/jpeg;base64,${base64Str}`;
 };
+
+const quillModules = {
+  toolbar: [
+    [{ 'font': [] }, { 'size': [] }],
+    [{ 'header': [1, 2, 3, false] }],
+    [{ 'color': [] }, { 'background': [] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }, { 'align': [] }],
+    ['clean']
+  ],
+};
+
+const quillFormats = [
+  'font', 'size',
+  'header',
+  'color', 'background',
+  'bold', 'italic', 'underline', 'strike',
+  'list', 'indent', 'align'
+];
 
 const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
   const [title, setTitle] = useState(initialData?.title || '');
@@ -216,15 +237,18 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
               placeholder="Введіть назву"
             />
             
-            <div className="input-group">
+            <div className="input-group" style={{ marginBottom: '1.5rem' }}>
               <label className="input-label">Опис товару</label>
-              <textarea 
-                className="input-field" 
-                value={description} 
-                onChange={e => setDescription(e.target.value)} 
-                rows={4} 
-                placeholder="Введіть детальний опис"
-              />
+              <div className="quill-container" style={{ backgroundColor: 'white', borderRadius: '8px' }}>
+                <ReactQuill 
+                  theme="snow"
+                  value={description} 
+                  onChange={setDescription} 
+                  modules={quillModules}
+                  formats={quillFormats}
+                  placeholder="Введіть детальний опис"
+                />
+              </div>
             </div>
 
             <div className="price-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
