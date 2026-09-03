@@ -22,6 +22,7 @@ interface OrderDetails {
     id: string;
     number: number;
     created: string;
+    ordered?: string | null;
     status: number;
     clientName: string;
     clientMobilePhone: string;
@@ -227,7 +228,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, onClose,
                             <div className="details-header">
                                 <div>
                                     <h3>Замовлення №{order.number}</h3>
-                                    <span className="text-muted">{new Date(order.created).toLocaleString('uk-UA')}</span>
+                                    <span className="text-muted">{new Date(order.ordered ? order.ordered : order.created).toLocaleString('uk-UA')}</span>
                                 </div>
                                 <div className="header-actions">
                                     {isEditing && isAdmin ? (

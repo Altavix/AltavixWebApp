@@ -12,12 +12,12 @@ interface OrderSummary {
     id: string;
     number: number;
     created: string;
-    ordered: boolean;
-    paid: boolean;
-    processing: boolean;
-    shipped: boolean;
-    delivered: boolean;
-    cancelled: boolean;
+    ordered: string | null;
+    paid: string | null;
+    processing: string | null;
+    shipped: string | null;
+    delivered: string | null;
+    cancelled: string | null;
     clientName: string;
     city: string;
     totalPrice: number;
@@ -33,7 +33,7 @@ const OrdersMonitor: React.FC = () => {
     // Table state
     const [page, setPage] = useState(1);
     const [pageSize] = useState(20);
-    const [sortColumn, setSortColumn] = useState<string>('created');
+    const [sortColumn, setSortColumn] = useState<string>('ordered');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
     const [filters, setFilters] = useState<Record<string, string>>({});
     
@@ -154,12 +154,15 @@ const OrdersMonitor: React.FC = () => {
     const columns: Column<OrderSummary>[] = [
         { key: 'number', title: 'Номер', sortable: true, filterable: true, filterType: 'text' },
         { 
-            key: 'created', 
-            title: 'Створено', 
+            key: 'ordered', 
+            title: 'Оформлено', 
             sortable: true,
             filterable: true,
             filterType: 'dateRange',
-            render: (item) => new Date(item.created).toLocaleDateString()
+            render: (item) => {
+                const dateString = item.ordered ? item.ordered : item.created;
+                return new Date(dateString).toLocaleDateString();
+            }
         },
         { key: 'clientName', title: 'Клієнт', sortable: true, filterable: true, filterType: 'text' },
         { key: 'city', title: 'Місто', sortable: true, filterable: true, filterType: 'text' },

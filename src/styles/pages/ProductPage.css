@@ -266,20 +266,7 @@
 .product-description-formatted h2 { font-size: 1.3rem; }
 .product-description-formatted h3 { font-size: 1.1rem; }
 
-.ql-editor ul {
-  padding-left: 1.5rem !important;
-  list-style-type: disc !important;
-}
 
-.ql-editor ol {
-  padding-left: 1.5rem !important;
-  list-style-type: decimal !important;
-}
-
-.ql-editor li {
-  list-style-type: inherit !important;
-  display: list-item !important;
-}
 
 
 

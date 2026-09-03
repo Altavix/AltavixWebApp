@@ -260,8 +260,6 @@
 }
 
 .quill-container .ql-container {
-  min-height: 150px;
-  max-height: 400px;
   overflow-y: auto;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
@@ -270,6 +268,8 @@
 }
 
 .quill-container .ql-editor {
+  min-height: 150px;
+  max-height: 400px;
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: pre-wrap;
