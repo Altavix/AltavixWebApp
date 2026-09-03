@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Table } from '../../../components/UI/Table/Table';
 import type { Column } from '../../../components/UI/Table/Table';
 import { useFetching } from '../../../hooks/useFetching';
 import { OrderService } from '../../../services/CartService';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import OrderDetailsModal from '../../../components/Profile/OrderDetailsModal';
 import '../../../styles/pages/Admin/OrdersMonitor.css';
 

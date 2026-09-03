@@ -23,8 +23,9 @@ const CharacteristicsAdmin: React.FC = () => {
 
     const loadCharacteristics = async () => {
         const response = await fetchCharacteristics();
-        if (response && response.messageType !== 'error' && response.data?.data?.characteristics) {
-            setCharacteristics(response.data.data.characteristics);
+        const data = response?.data as any;
+        if (response && response.messageType !== 'error' && data?.characteristics) {
+            setCharacteristics(data.characteristics);
         }
     };
 
@@ -42,7 +43,7 @@ const CharacteristicsAdmin: React.FC = () => {
         setEditingCharacteristic(null);
     };
 
-    const [handleSave, isSaving] = useFetching(async (data: { name: string; enabled: boolean }) => {
+    const [handleSave] = useFetching(async (data: { name: string; enabled: boolean }) => {
         if (editingCharacteristic) {
             return await CharacteristicService.update(editingCharacteristic.id, { id: editingCharacteristic.id, ...data });
         } else {
@@ -64,7 +65,7 @@ const CharacteristicsAdmin: React.FC = () => {
         setIsConfirmOpen(true);
     };
 
-    const [executeDeleteAction, isDeleting] = useFetching(async () => {
+    const [executeDeleteAction] = useFetching(async () => {
         if (!characteristicToDelete) return;
         return await CharacteristicService.delete(characteristicToDelete.id);
     });

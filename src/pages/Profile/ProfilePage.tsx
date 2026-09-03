@@ -18,7 +18,7 @@ const ProfilePage: React.FC = () => {
         phoneNumber: ''
     });
 
-    const [fetchProfile, isLoading, error] = useFetching(async (id: string) => {
+    const [fetchProfile, isLoading] = useFetching(async (id: string) => {
         const response = await UserService.getUserProfile(id);
         if (response.data) {
             setProfile({
@@ -31,7 +31,7 @@ const ProfilePage: React.FC = () => {
         }
     });
 
-    const [saveProfile, isSaving, saveError] = useFetching(async (data: UserProfileDto) => {
+    const [saveProfile, isSaving] = useFetching(async (data: UserProfileDto) => {
         return await UserService.updateUserProfile(data);
     });
 
@@ -83,10 +83,6 @@ const ProfilePage: React.FC = () => {
                     {isLoading ? (
                         <div style={{ textAlign: 'center', padding: '2rem' }}>
                             <Loader />
-                        </div>
-                    ) : error ? (
-                        <div style={{ textAlign: 'center', padding: '2rem', color: 'red' }}>
-                            {error}
                         </div>
                     ) : (
                         <form className="profile-details" onSubmit={handleSave}>
@@ -148,7 +144,6 @@ const ProfilePage: React.FC = () => {
                                 />
                             </div>
                             
-                            {saveError && <div style={{ color: 'red', marginTop: '1rem' }}>{saveError}</div>}
 
                             <div className="profile-actions-inline">
                                 <button type="submit" className="btn-primary" disabled={isSaving}>

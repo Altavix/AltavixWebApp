@@ -72,7 +72,7 @@ const CheckoutPage: React.FC = () => {
             if (dRes.messageType === "success" && dRes.data) {
                 setDeliveryMethods(dRes.data);
                 if (dRes.data.length > 0) {
-                    setFormData(prev => ({ ...prev, deliveryMethodId: dRes.data[0].id }));
+                    setFormData(prev => ({ ...prev, deliveryMethodId: dRes.data![0].id }));
                 }
             }
             
@@ -80,7 +80,7 @@ const CheckoutPage: React.FC = () => {
             if (pRes.messageType === "success" && pRes.data) {
                 setPaymentMethods(pRes.data);
                 if (pRes.data.length > 0) {
-                    setFormData(prev => ({ ...prev, paymentMethodId: pRes.data[0].id }));
+                    setFormData(prev => ({ ...prev, paymentMethodId: pRes.data![0].id }));
                 }
             }
         };

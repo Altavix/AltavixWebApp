@@ -23,8 +23,9 @@ const BrandsAdmin: React.FC = () => {
 
     const loadBrands = async () => {
         const response = await fetchBrands();
-        if (response && response.messageType !== 'error' && response.data?.data?.brands) {
-            setBrands(response.data.data.brands);
+        const data = response?.data as any;
+        if (response && response.messageType !== 'error' && data?.brands) {
+            setBrands(data.brands);
         }
     };
 
@@ -42,7 +43,7 @@ const BrandsAdmin: React.FC = () => {
         setEditingBrand(null);
     };
 
-    const [handleSave, isSaving] = useFetching(async (data: { name: string; enabled: boolean }) => {
+    const [handleSave] = useFetching(async (data: { name: string; enabled: boolean }) => {
         if (editingBrand) {
             return await BrandService.update(editingBrand.id, { id: editingBrand.id, ...data });
         } else {
@@ -64,7 +65,7 @@ const BrandsAdmin: React.FC = () => {
         setIsConfirmOpen(true);
     };
 
-    const [executeDeleteAction, isDeleting] = useFetching(async () => {
+    const [executeDeleteAction] = useFetching(async () => {
         if (!brandToDelete) return;
         return await BrandService.delete(brandToDelete.id);
     });

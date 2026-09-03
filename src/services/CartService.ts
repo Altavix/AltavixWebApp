@@ -1,4 +1,4 @@
-import type { ApiResponseDto } from '../types/api';
+
 import { $api } from '../config/api';
 
 export interface CreateCartResponse {

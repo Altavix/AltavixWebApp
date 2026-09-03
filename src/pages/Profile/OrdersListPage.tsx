@@ -55,7 +55,7 @@ const OrdersListPage: React.FC = () => {
     const [orders, setOrders] = useState<OrderSummary[]>([]);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
     
-    const [fetchOrders, isLoading, error] = useFetching(async (clientId: string) => {
+    const [fetchOrders, isLoading] = useFetching(async (clientId: string) => {
         const res = await OrderService.getOrdersList(clientId);
         return res;
     });
@@ -63,8 +63,9 @@ const OrdersListPage: React.FC = () => {
     const loadData = async () => {
         if (!user) return;
         const res = await fetchOrders(user.id);
-        if (res.messageType === 'success' && res.data?.orders) {
-            setOrders(res.data.orders);
+        const data = res.data as any;
+        if (res.messageType === 'success' && data?.orders) {
+            setOrders(data.orders);
         }
     };
 
@@ -94,8 +95,6 @@ const OrdersListPage: React.FC = () => {
 
                 {isLoading ? (
                     <Loader />
-                ) : error ? (
-                    <div className="error-msg">{error}</div>
                 ) : (
                     <div className="orders-list">
                         {hasActiveCart && (

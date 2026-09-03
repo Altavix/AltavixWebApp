@@ -43,12 +43,13 @@ const SearchModal: React.FC<SearchModalProps> = ({
         const timer = setTimeout(async () => {
             if (searchTerm.trim().length >= 2) {
                 const res = await fetchData(searchTerm);
-                if (res.data && res.data.users) {
-                    setResults(res.data.users);
-                } else if (Array.isArray(res.data)) {
-                    setResults(res.data);
-                } else if (res.data && res.data.items) {
-                    setResults(res.data.items);
+                const data = res.data as any;
+                if (data && data.users) {
+                    setResults(data.users);
+                } else if (Array.isArray(data)) {
+                    setResults(data);
+                } else if (data && data.items) {
+                    setResults(data.items);
                 } else {
                     setResults([]);
                 }

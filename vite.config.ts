@@ -10,7 +10,7 @@ export default defineConfig({
   ],
   server: {
     port: 5173,
-    https: true,
+    // https: true, // Error TS2769: Type 'true' has no properties in common with type 'ServerOptions'
     proxy: {
       '/api': {
         target: 'https://localhost:7248',
