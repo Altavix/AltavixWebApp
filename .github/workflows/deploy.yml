@@ -11,7 +11,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/altavix-frontend
+  # GitHub requires Docker image names to be completely lowercase
+  IMAGE_NAME: altavix/altavix-frontend
 
 jobs:
   build-and-push:
