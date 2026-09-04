@@ -58,7 +58,7 @@ const Footer: React.FC = () => {
         */}
       </div>
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} Altavix. Всі права захищено.</p>
+        <p>© {new Date().getFullYear()} Altavix. Всі права захищено. <span style={{ opacity: 0.5, marginLeft: '10px', fontSize: '0.85em' }}>v{import.meta.env.VITE_APP_VERSION}</span></p>
       </div>
     </footer>
   );

@@ -1,0 +1,75 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/altavix-frontend
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Calculate Dynamic Version
+        id: calc_version
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.1.0")
+          COMMITS_SINCE=$(git rev-list $LATEST_TAG..HEAD --count 2>/dev/null || git rev-list HEAD --count)
+          BASE_VERSION=${LATEST_TAG#v}
+          IFS='.' read -ra VER_PARTS <<< "$BASE_VERSION"
+          MAJOR=${VER_PARTS[0]}
+          MINOR=${VER_PARTS[1]}
+          PATCH=$COMMITS_SINCE
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then SUFFIX=""; else SUFFIX="-dev"; fi
+          FINAL_VERSION="$MAJOR.$MINOR.$PATCH$SUFFIX"
+          echo "APP_VERSION=$FINAL_VERSION" >> $GITHUB_ENV
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          build-args: |
+            APP_VERSION=${{ env.APP_VERSION }}
+
+  deploy:
+    needs: build-and-push
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Execute deployment on VPS via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /opt/altavix
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker-compose pull frontend
+            docker-compose up -d --remove-orphans frontend
