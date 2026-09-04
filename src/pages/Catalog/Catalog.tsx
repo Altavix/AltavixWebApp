@@ -28,7 +28,7 @@ const sortOptions = [
 
 const Catalog: React.FC = () => {
   const [page, setPage] = useState<number>(1);
-  const pageSize = 8;
+  const pageSize = 100;
   const auth = useContext(AuthContext);
   const isAdmin = auth?.isAuth && auth?.user?.role === 'Admin';
   
