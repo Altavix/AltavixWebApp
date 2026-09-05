@@ -31,7 +31,7 @@ const Pagination: React.FC<PaginationProps> = ({
       </button>
       
       <span className="pagination-info">
-        Page {currentPage} of {totalPages}
+        Сторінка {currentPage} з {totalPages}
       </span>
       
       <button 

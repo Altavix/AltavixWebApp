@@ -122,12 +122,18 @@ const Catalog: React.FC = () => {
     setIsConfirmOpen(true);
   };
 
+  const [deleteAction, isDeleting] = useFetching(async (id: string) => {
+    return await ProductService.deleteProduct(id);
+  });
+
   const handleConfirmDelete = async () => {
     if (productToDelete) {
-      const response = await ProductService.deleteProduct(productToDelete);
-      if (response && response.data?.messageType !== 'error') {
+      const result = await deleteAction(productToDelete);
+      if (result && result.messageType !== 'error') {
         loadProducts();
       }
+      setIsConfirmOpen(false);
+      setProductToDelete(null);
     }
   };
 

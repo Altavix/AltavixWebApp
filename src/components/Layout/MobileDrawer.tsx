@@ -114,14 +114,14 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose }) => {
               <img src="/icons/telephone.svg" alt="Телефон" className="drawer-contact-icon" />
               <div className="drawer-phones">
                 <a href="tel:+380937204195">093 720 41 95</a>
-                <a href="tel:+380505947204">050 594 72 04</a>
+                <a href="tel:+380505947836">050 594 78 36</a>
               </div>
             </div>
             
             <div className="drawer-messengers">
-              <span><img src="/icons/viber.svg" alt="Viber" /></span>
-              <span><img src="/icons/telegram.svg" alt="Telegram" /></span>
-              <span><img src="/icons/whatsapp.svg" alt="WhatsApp" /></span>
+              <a href="viber://chat?number=%2B380505947836" target="_blank" rel="noopener noreferrer"><img src="/icons/viber.svg" alt="Viber" /></a>
+              <a href="https://t.me/+380505947836" target="_blank" rel="noopener noreferrer"><img src="/icons/telegram.svg" alt="Telegram" /></a>
+              <a href="https://wa.me/380505947836" target="_blank" rel="noopener noreferrer"><img src="/icons/whatsapp.svg" alt="WhatsApp" /></a>
             </div>
             
             <div className="drawer-contact-email">

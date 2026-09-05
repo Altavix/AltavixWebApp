@@ -19,20 +19,20 @@ const Footer: React.FC = () => {
             <img src="/icons/telephone.svg" alt="Телефон" className="contact-icon" />
             <div className="contact-phones">
               <a href="tel:+380937204195">093 720 41 95</a>
-              <a href="tel:+380505947204">050 594 72 04</a>
+              <a href="tel:+380505947836">050 594 78 36</a>
             </div>
           </div>
 
           <div className="contact-messengers">
-            <span title="Viber">
+            <a href="viber://chat?number=%2B380505947836" title="Viber" target="_blank" rel="noopener noreferrer">
               <img src="/icons/viber.svg" alt="Viber" />
-            </span>
-            <span title="Telegram">
+            </a>
+            <a href="https://t.me/+380505947836" title="Telegram" target="_blank" rel="noopener noreferrer">
               <img src="/icons/telegram.svg" alt="Telegram" />
-            </span>
-            <span title="WhatsApp">
+            </a>
+            <a href="https://wa.me/380505947836" title="WhatsApp" target="_blank" rel="noopener noreferrer">
               <img src="/icons/whatsapp.svg" alt="WhatsApp" />
-            </span>
+            </a>
           </div>
 
           <div className="contact-email">
