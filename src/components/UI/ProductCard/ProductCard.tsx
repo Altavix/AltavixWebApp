@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { ProductVm } from '../../../types/product';
 import '../../../styles/components/UI/ProductCard.css';
+import { ensureBase64Prefix } from '../../../utils/imageUtils';
 
 interface ProductCardProps {
   product: ProductVm;
@@ -10,13 +11,6 @@ interface ProductCardProps {
   onDelete?: (id: string) => void;
   onEdit?: (id: string) => void;
 }
-
-const ensureBase64Prefix = (base64Str: string) => {
-  if (base64Str.startsWith('http') || base64Str.startsWith('data:image')) {
-    return base64Str;
-  }
-  return `data:image/jpeg;base64,${base64Str}`;
-};
 
 const getPlainText = (html: string) => {
   if (!html) return '';

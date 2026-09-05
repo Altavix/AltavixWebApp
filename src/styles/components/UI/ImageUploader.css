@@ -94,6 +94,49 @@
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   background-color: #f0f0f0;
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.image-preview:active {
+  cursor: grabbing;
+}
+
+.image-preview.is-dragging {
+  opacity: 0.4;
+  transform: scale(0.95);
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.image-preview.drop-target {
+  transform: scale(1.04);
+  box-shadow: 0 0 0 3px var(--color-primary);
+}
+
+.image-position-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background-color: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 11px;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.image-position-badge.main-badge {
+  background-color: var(--color-primary);
 }
 
 .image-preview img {

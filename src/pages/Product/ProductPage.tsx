@@ -8,13 +8,7 @@ import type { CategoryDto } from '../../types/category';
 import Loader from '../../components/UI/Loader';
 import 'react-quill-new/dist/quill.snow.css';
 import '../../styles/pages/ProductPage.css';
-
-const ensureBase64Prefix = (base64Str: string) => {
-  if (base64Str.startsWith('http') || base64Str.startsWith('data:image')) {
-    return base64Str;
-  }
-  return `data:image/jpeg;base64,${base64Str}`;
-};
+import { ensureBase64Prefix } from '../../utils/imageUtils';
 
 const ProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

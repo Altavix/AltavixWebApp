@@ -1,4 +1,4 @@
-﻿import { defineConfig } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import mkcert from 'vite-plugin-mkcert'
 
@@ -16,6 +16,11 @@ export default defineConfig({
     // https: true, // Error TS2769: Type 'true' has no properties in common with type 'ServerOptions'
     proxy: {
       '/api': {
+        target: 'https://localhost:7248',
+        changeOrigin: true,
+        secure: false
+      },
+      '/images': {
         target: 'https://localhost:7248',
         changeOrigin: true,
         secure: false

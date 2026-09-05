@@ -16,6 +16,7 @@ import MultiSelect from '../UI/Select/MultiSelect';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import '../../styles/components/Admin/ProductForm.css';
+import { ensureBase64Prefix } from '../../utils/imageUtils';
 
 export interface ProductFormData {
   title: string;
@@ -35,13 +36,6 @@ interface ProductFormProps {
   onSubmit: (data: ProductFormData) => void;
   isSubmitting?: boolean;
 }
-
-const ensureBase64Prefix = (base64Str: string) => {
-  if (base64Str.startsWith('http') || base64Str.startsWith('data:image')) {
-    return base64Str;
-  }
-  return `data:image/jpeg;base64,${base64Str}`;
-};
 
 const quillModules = {
   toolbar: [
@@ -160,6 +154,11 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
 
   const handleRemoveImage = (indexToRemove: number) => {
     setImages(prev => prev.filter((_, index) => index !== indexToRemove));
+    setImagesModified(true);
+  };
+
+  const handleReorderImages = (reorderedImages: string[]) => {
+    setImages(reorderedImages);
     setImagesModified(true);
   };
 
@@ -335,6 +334,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
                 images={images} 
                 onImagesChange={handleImagesChange} 
                 onRemoveImage={handleRemoveImage} 
+                onReorderImages={handleReorderImages}
               />
             </div>
           </div>
