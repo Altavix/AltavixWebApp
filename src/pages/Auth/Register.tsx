@@ -19,7 +19,11 @@ const Register: React.FC = () => {
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  const [registerAction, isLoading] = useFetching(async (e: React.FormEvent) => {
+  const [registerAction, isLoading] = useFetching(async () => {
+    return await AuthService.register(name, email, password, surname, middleName, phone);
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name || !email || !password || !confirmPassword) {
@@ -32,11 +36,13 @@ const Register: React.FC = () => {
       return;
     }
 
-    return await AuthService.register(name, email, password, surname, middleName, phone);
-  });
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{6,}$/;
+    if (!passwordRegex.test(password)) {
+      showToast('Пароль повинен містити мінімум 6 символів, велику та малу літери, цифру та спеціальний символ (!@#$%^&*)', 'error');
+      return;
+    }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    const result = await registerAction(e);
+    const result = await registerAction();
     
     if (!result) return;
     

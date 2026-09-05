@@ -20,19 +20,7 @@ const RegisterAdmin: React.FC = () => {
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  const [registerAdminAction, isLoading] = useFetching(async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!name || !email || !password || !confirmPassword || !secretKey) {
-      showToast('Будь ласка, заповніть всі обов\'язкові поля', 'info');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      showToast('Паролі не співпадають', 'error');
-      return;
-    }
-
+  const [registerAdminAction, isLoading] = useFetching(async () => {
     const payload = {
       firstName: name,
       lastName: surname,
@@ -48,7 +36,25 @@ const RegisterAdmin: React.FC = () => {
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    const result = await registerAdminAction(e);
+    e.preventDefault();
+
+    if (!name || !email || !password || !confirmPassword || !secretKey) {
+      showToast('Будь ласка, заповніть всі обов\'язкові поля', 'info');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      showToast('Паролі не співпадають', 'error');
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{6,}$/;
+    if (!passwordRegex.test(password)) {
+      showToast('Пароль повинен містити мінімум 6 символів, велику та малу літери, цифру та спеціальний символ (!@#$%^&*)', 'error');
+      return;
+    }
+
+    const result = await registerAdminAction();
     
     if (!result) return;
     
